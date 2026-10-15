@@ -1,0 +1,6 @@
+{
+  "name": "Gestor de Horarios y Carga Académica - Sec. 129",
+  "description": "Sistema de asignación y gestión de horarios semanales individuales y por grupo para 1º, 2º y 3º de secundaria, con matriz oficial de carga académica, estadísticas departamentales y prevención de empalmes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

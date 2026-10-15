@@ -1,0 +1,315 @@
+@import "tailwindcss";
+
+/* =========================================================
+   High-Contrast Light Theme for Daytime School Hours
+   ========================================================= */
+html.theme-light,
+.theme-light {
+  color-scheme: light;
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+/* Background overrides for containers, cards, and panels */
+.theme-light .bg-\[\#0a0a0a\],
+.theme-light .bg-\[\#0c0e12\],
+.theme-light .bg-\[\#111318\],
+.theme-light .bg-\[\#1a1d26\],
+.theme-light .bg-slate-900,
+.theme-light .bg-slate-950 {
+  background-color: #ffffff !important;
+}
+
+.theme-light .bg-\[\#16181f\],
+.theme-light .bg-\[\#0a0c10\],
+.theme-light .bg-\[\#0e1015\] {
+  background-color: #f8fafc !important;
+}
+
+/* Header & Top Banner in Light Theme */
+.theme-light header {
+  background-color: #ffffff !important;
+  border-bottom-color: #cbd5e1 !important;
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.06) !important;
+}
+
+.theme-light header .bg-\[\#06070a\] {
+  background-color: #f1f5f9 !important;
+  color: #334155 !important;
+  border-bottom-color: #cbd5e1 !important;
+}
+
+.theme-light header .bg-\[\#06070a\] .text-amber-300 {
+  color: #b45309 !important;
+}
+
+/* Navigation Tabs in Light Theme */
+.theme-light #main-nav-tabs button.bg-amber-500\/15 {
+  background-color: #fef3c7 !important;
+  color: #92400e !important;
+  border-color: #f59e0b !important;
+  box-shadow: 0 1px 2px rgba(245, 158, 11, 0.15) !important;
+}
+
+.theme-light #main-nav-tabs button.text-slate-400 {
+  color: #475569 !important;
+}
+
+.theme-light #main-nav-tabs button.text-slate-400:hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+/* Active Conflicts Tab in Light Theme */
+.theme-light #main-nav-tabs button.bg-rose-500\/20 {
+  background-color: #ffe4e6 !important;
+  color: #9f1239 !important;
+  border-color: #f43f5e !important;
+}
+
+/* Text Colors in Light Theme (High Contrast for Classrooms & Projectors) */
+.theme-light .text-slate-100,
+.theme-light .text-slate-200 {
+  color: #0f172a !important;
+}
+
+.theme-light .text-slate-300 {
+  color: #1e293b !important;
+}
+
+.theme-light .text-slate-400 {
+  color: #334155 !important;
+}
+
+.theme-light .text-slate-500 {
+  color: #475569 !important;
+}
+
+.theme-light .text-slate-600 {
+  color: #64748b !important;
+}
+
+/* Inputs, Selects, and Textareas */
+.theme-light input,
+.theme-light select,
+.theme-light textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #94a3b8 !important;
+}
+
+.theme-light input::placeholder,
+.theme-light textarea::placeholder {
+  color: #64748b !important;
+}
+
+.theme-light input:focus,
+.theme-light select:focus,
+.theme-light textarea:focus {
+  border-color: #d97706 !important;
+  outline: 2px solid rgba(217, 119, 6, 0.2) !important;
+}
+
+/* Action Buttons in Light Theme */
+.theme-light button.bg-\[\#16181f\],
+.theme-light button.bg-\[\#1c202a\],
+.theme-light button.bg-\[\#111318\] {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #1e293b !important;
+}
+
+.theme-light button.bg-\[\#16181f\]:hover,
+.theme-light button.bg-\[\#1c202a\]:hover,
+.theme-light button.bg-\[\#111318\]:hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-color: #94a3b8 !important;
+}
+
+/* Borders in Light Theme */
+.theme-light .border-slate-800,
+.theme-light .border-slate-800\/90,
+.theme-light .border-slate-800\/80,
+.theme-light .border-slate-800\/60,
+.theme-light .border-slate-700,
+.theme-light .border-slate-700\/80,
+.theme-light .border-slate-700\/60 {
+  border-color: #cbd5e1 !important;
+}
+
+.theme-light .border-slate-600 {
+  border-color: #94a3b8 !important;
+}
+
+.theme-light .divide-slate-800,
+.theme-light .divide-slate-800\/80 {
+  border-color: #e2e8f0 !important;
+}
+
+/* Tables in Light Theme */
+.theme-light table {
+  background-color: #ffffff !important;
+}
+
+.theme-light th {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+  font-weight: 800 !important;
+}
+
+.theme-light thead.bg-\[\#16181f\] th,
+.theme-light thead th.bg-\[\#16181f\] {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+.theme-light td {
+  border-color: #e2e8f0 !important;
+}
+
+.theme-light td.bg-\[\#0e1015\] {
+  background-color: #f8fafc !important;
+}
+
+.theme-light tr.hover\:bg-slate-800\/30:hover {
+  background-color: #f8fafc !important;
+}
+
+/* Empty Timetable Slot in Light Theme */
+.theme-light .border-dashed.border-slate-800 {
+  border-color: #cbd5e1 !important;
+  background-color: #f8fafc !important;
+}
+
+.theme-light .border-dashed.border-slate-800:hover {
+  border-color: #f59e0b !important;
+  background-color: #fffbeb !important;
+}
+
+/* Status & Shift Pills in Light Theme */
+.theme-light .bg-amber-950\/40,
+.theme-light .bg-amber-950\/60 {
+  background-color: #fef3c7 !important;
+  color: #92400e !important;
+  border-color: #fcd34d !important;
+}
+
+.theme-light .bg-emerald-950\/40,
+.theme-light .bg-emerald-950\/60 {
+  background-color: #d1fae5 !important;
+  color: #065f46 !important;
+  border-color: #6ee7b7 !important;
+}
+
+.theme-light .bg-sky-950\/40 {
+  background-color: #e0f2fe !important;
+  color: #0369a1 !important;
+  border-color: #7dd3fc !important;
+}
+
+.theme-light .bg-indigo-950\/60 {
+  background-color: #e0e7ff !important;
+  color: #3730a3 !important;
+  border-color: #a5b4fc !important;
+}
+
+.theme-light .bg-rose-950\/30,
+.theme-light .bg-rose-950\/40,
+.theme-light .bg-rose-950\/60,
+.theme-light .bg-rose-950 {
+  background-color: #ffe4e6 !important;
+  color: #9f1239 !important;
+  border-color: #fecdd3 !important;
+}
+
+/* Modals in Light Theme */
+.theme-light .bg-\[\#111318\].rounded-2xl {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+}
+
+.theme-light .bg-\[\#0a0c10\].border-b {
+  background-color: #f8fafc !important;
+  border-bottom-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+.theme-light .bg-\[\#0a0c10\].border-t {
+  background-color: #f8fafc !important;
+  border-top-color: #cbd5e1 !important;
+}
+
+.theme-light .bg-\[\#16181f\].border-b {
+  background-color: #ffffff !important;
+  border-bottom-color: #cbd5e1 !important;
+}
+
+/* Subtle pulse animation for pending / unsaved schedule changes on Save button */
+@keyframes subtle-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5);
+  }
+  50% {
+    transform: scale(1.025);
+    box-shadow: 0 0 0 5px rgba(245, 158, 11, 0);
+  }
+}
+
+.animate-subtle-pulse {
+  animation: subtle-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@layer utilities {
+  @media print {
+    html, body {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    header, nav, button, .print\\:hidden, #app-navbar {
+      display: none !important;
+    }
+    .print-modal-overlay {
+      position: static !important;
+      overflow: visible !important;
+      background: #ffffff !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      max-height: none !important;
+      height: auto !important;
+      width: 100% !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    .print-sheet-card {
+      box-shadow: none !important;
+      border-radius: 0 !important;
+      padding: 8px !important;
+      max-width: 100% !important;
+      width: 100% !important;
+      margin: 0 !important;
+    }
+    table {
+      width: 100% !important;
+      border-collapse: collapse !important;
+      page-break-inside: auto !important;
+    }
+    tr {
+      page-break-inside: avoid !important;
+      page-break-after: auto !important;
+    }
+    th, td {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+  }
+}
+
