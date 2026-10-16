@@ -99,9 +99,9 @@ export const AssignSubstituteModal: React.FC<AssignSubstituteModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-black/70 backdrop-blur-xs animate-in fade-in duration-150">
       <div
-        className={`relative w-full max-w-lg rounded-2xl border shadow-2xl overflow-hidden ${
+        className={`relative w-full max-w-sm sm:max-w-md md:max-w-lg lg:w-[460px] max-h-[85vh] sm:max-h-[80dvh] flex flex-col rounded-2xl border shadow-2xl overflow-hidden ${
           isLight
             ? 'bg-white border-slate-200 text-slate-900 shadow-slate-400/40'
             : 'bg-[#12151e] border-slate-800 text-slate-100 shadow-black/80'
@@ -109,14 +109,14 @@ export const AssignSubstituteModal: React.FC<AssignSubstituteModalProps> = ({
       >
         {/* Header */}
         <div
-          className={`px-5 py-4 border-b flex items-center justify-between ${
+          className={`px-4 sm:px-5 py-4 border-b flex items-center justify-between shrink-0 ${
             isLight
               ? 'bg-blue-50/70 border-blue-100'
               : 'bg-blue-950/20 border-blue-900/40'
           }`}
         >
           <div className="flex items-center space-x-2.5">
-            <div className="p-2 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30">
+            <div className="p-2 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30 shrink-0">
               <UserPlus className="w-5 h-5 text-blue-400" />
             </div>
             <div>
@@ -133,14 +133,14 @@ export const AssignSubstituteModal: React.FC<AssignSubstituteModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content & Form */}
-        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-5 flex-1 overflow-y-auto space-y-4">
           {/* Day and Slot indicator */}
           <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-900/40 border border-slate-800 text-xs">
             <div className="flex items-center space-x-1.5 text-amber-400 font-bold">

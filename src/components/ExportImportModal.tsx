@@ -292,10 +292,10 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-4 animate-in fade-in">
-      <div className="bg-[#111318] rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-800/90 overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-3 sm:p-4 md:p-6 animate-in fade-in">
+      <div className="bg-[#111318] rounded-2xl w-full max-w-sm sm:max-w-md md:max-w-xl lg:max-w-2xl max-h-[85vh] sm:max-h-[80dvh] shadow-2xl border border-slate-800/90 overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="p-4 bg-[#0a0c10] border-b border-slate-800 text-white flex items-center justify-between">
+        <div className="p-4 bg-[#0a0c10] border-b border-slate-800 text-white flex items-center justify-between shrink-0">
           <div className="flex items-center space-x-2">
             <Download className="w-5 h-5 text-amber-400" />
             <h3 className="text-base font-bold text-slate-100 font-serif">Exportación, Importación y Respaldos</h3>
@@ -309,13 +309,13 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
         </div>
 
         {/* Sub-tabs */}
-        <div className="flex border-b border-slate-800 bg-[#0a0c10] px-6 pt-3 gap-2">
+        <div className="flex border-b border-slate-800 bg-[#0a0c10] px-4 sm:px-6 pt-3 gap-2 shrink-0 overflow-x-auto">
           <button
             onClick={() => {
               setActiveSubTab('export');
               setImportStatus(null);
             }}
-            className={`pb-3 px-3 text-xs font-bold border-b-2 transition-all ${
+            className={`pb-3 px-3 text-xs font-bold border-b-2 transition-all whitespace-nowrap ${
               activeSubTab === 'export'
                 ? 'border-amber-500 text-amber-400 font-extrabold'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -328,7 +328,7 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
               setActiveSubTab('import');
               setImportStatus(null);
             }}
-            className={`pb-3 px-3 text-xs font-bold border-b-2 transition-all ${
+            className={`pb-3 px-3 text-xs font-bold border-b-2 transition-all whitespace-nowrap ${
               activeSubTab === 'import'
                 ? 'border-amber-500 text-amber-400 font-extrabold'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -341,7 +341,7 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
               setActiveSubTab('backup');
               setImportStatus(null);
             }}
-            className={`pb-3 px-3 text-xs font-bold border-b-2 transition-all ${
+            className={`pb-3 px-3 text-xs font-bold border-b-2 transition-all whitespace-nowrap ${
               activeSubTab === 'backup'
                 ? 'border-amber-500 text-amber-400 font-extrabold'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -352,7 +352,7 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-5 overflow-y-auto">
+        <div className="p-4 sm:p-6 space-y-5 overflow-y-auto flex-1">
           {importStatus && (
             <div
               className={`p-3 rounded-lg text-xs font-bold flex items-center space-x-2 ${

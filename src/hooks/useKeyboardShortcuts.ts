@@ -9,6 +9,7 @@ interface KeyboardShortcutsProps {
   onAutoSolve?: () => void;
   onSelectTab?: (tabIndex: number) => void;
   onToggleHelp?: () => void;
+  onToggleCopilot?: () => void;
   onEscape?: () => void;
   enabled?: boolean;
 }
@@ -22,6 +23,7 @@ export function useKeyboardShortcuts({
   onAutoSolve,
   onSelectTab,
   onToggleHelp,
+  onToggleCopilot,
   onEscape,
   enabled = true,
 }: KeyboardShortcutsProps) {
@@ -105,6 +107,13 @@ export function useKeyboardShortcuts({
           return;
         }
 
+        // Copilot: Ctrl+K / Cmd+K
+        if (key === 'k' && onToggleCopilot) {
+          e.preventDefault();
+          onToggleCopilot();
+          return;
+        }
+
         // Auto-Solve: Ctrl+Shift+A / Cmd+Shift+A
         if (key === 'a' && e.shiftKey && onAutoSolve) {
           e.preventDefault();
@@ -138,6 +147,7 @@ export function useKeyboardShortcuts({
     onAutoSolve,
     onSelectTab,
     onToggleHelp,
+    onToggleCopilot,
     onEscape,
   ]);
 }

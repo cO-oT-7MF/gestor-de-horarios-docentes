@@ -25,22 +25,22 @@ export const RestoreInitialModal: React.FC<RestoreInitialModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-4 animate-in fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-3 sm:p-4 md:p-6 animate-in fade-in">
       <div
-        className={`rounded-2xl max-w-lg w-full shadow-2xl border overflow-hidden transition-all ${
+        className={`rounded-2xl w-full max-w-sm sm:max-w-md md:max-w-lg lg:w-[480px] max-h-[85vh] sm:max-h-[80dvh] shadow-2xl border overflow-hidden flex flex-col transition-all ${
           isLight
-            ? 'bg-white border-slate-200 text-slate-900'
-            : 'bg-[#111318] border-slate-800 text-slate-100'
+            ? 'bg-white border-slate-200 text-slate-900 shadow-slate-300/80'
+            : 'bg-[#111318] border-slate-800 text-slate-100 shadow-black/90'
         }`}
       >
         {/* Header */}
         <div
-          className={`p-5 border-b flex items-center justify-between ${
+          className={`p-4 sm:p-5 border-b flex items-center justify-between shrink-0 ${
             isLight ? 'bg-amber-50/70 border-amber-200' : 'bg-[#0a0c10] border-slate-800'
           }`}
         >
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-500">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-500 shrink-0">
               <RotateCcw className="w-5 h-5" />
             </div>
             <div>
@@ -59,7 +59,7 @@ export const RestoreInitialModal: React.FC<RestoreInitialModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-4">
+        <div className="p-4 sm:p-6 space-y-4 flex-1 overflow-y-auto">
           <div
             className={`p-4 rounded-xl border flex items-start space-x-3 ${
               isLight

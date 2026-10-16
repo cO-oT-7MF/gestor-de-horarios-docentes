@@ -28,6 +28,8 @@ interface GenerateScheduleModalProps {
   onNavigateTab: (tab: 'teacher' | 'group' | 'master') => void;
 }
 
+import { useTheme } from '../context/ThemeContext';
+
 export const GenerateScheduleModal: React.FC<GenerateScheduleModalProps> = ({
   isOpen,
   onClose,
@@ -37,6 +39,7 @@ export const GenerateScheduleModal: React.FC<GenerateScheduleModalProps> = ({
   onApplySchedule,
   onNavigateTab,
 }) => {
+  const { isLight } = useTheme();
   const [preferDoubleBlocks, setPreferDoubleBlocks] = useState(true);
   const [balanceTeacherDaily, setBalanceTeacherDaily] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -74,33 +77,47 @@ export const GenerateScheduleModal: React.FC<GenerateScheduleModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-4 animate-in fade-in">
-      <div className="bg-[#111318] rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-800/90 overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-3 sm:p-4 md:p-6 animate-in fade-in">
+      <div
+        className={`w-full max-w-sm sm:max-w-md md:max-w-xl lg:max-w-2xl max-h-[85vh] sm:max-h-[80dvh] flex flex-col rounded-2xl shadow-2xl border overflow-hidden ${
+          isLight
+            ? 'bg-white border-slate-200 text-slate-900 shadow-slate-300/80'
+            : 'bg-[#111318] border-slate-800 text-slate-100 shadow-black/90'
+        }`}
+      >
         {/* Header */}
-        <div className="p-5 bg-[#0a0c10] border-b border-slate-800 flex items-center justify-between">
+        <div
+          className={`p-4 sm:p-5 border-b flex items-center justify-between shrink-0 ${
+            isLight ? 'bg-amber-50/70 border-amber-200' : 'bg-[#0a0c10] border-slate-800'
+          }`}
+        >
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 dark:text-amber-400 shrink-0">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-100 font-serif">
+              <h3 className="text-base font-bold font-serif">
                 Generador Automático de Horarios Escolares
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className={`text-xs ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
                 Construye el horario final, individual y grupal sin empalmes a partir de la Carga Docente.
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
+            className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+              isLight
+                ? 'text-slate-400 hover:text-slate-700 hover:bg-slate-200/80'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+            }`}
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto space-y-5">
+        <div className="p-4 sm:p-6 overflow-y-auto space-y-5 flex-1">
           {/* Current Workload Overview Card */}
           <div className="bg-[#16181f] border border-slate-800 rounded-xl p-4">
             <div className="flex items-center justify-between mb-3 border-b border-slate-800 pb-2">

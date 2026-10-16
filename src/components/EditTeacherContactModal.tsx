@@ -105,9 +105,9 @@ export const EditTeacherContactModal: React.FC<EditTeacherContactModalProps> = (
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-4 animate-in fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-3 sm:p-4 md:p-6 animate-in fade-in">
       <div
-        className={`rounded-2xl max-w-lg w-full shadow-2xl border overflow-hidden flex flex-col transition-all ${
+        className={`rounded-2xl w-full max-w-sm sm:max-w-md md:max-w-lg lg:w-[480px] max-h-[85vh] sm:max-h-[80dvh] shadow-2xl border overflow-hidden flex flex-col transition-all ${
           isLight
             ? 'bg-white border-slate-300 text-slate-800'
             : 'bg-[#12141a] border-slate-800 text-slate-100 shadow-slate-950/60'
@@ -117,12 +117,12 @@ export const EditTeacherContactModal: React.FC<EditTeacherContactModalProps> = (
       >
         {/* Modal Header */}
         <div
-          className={`p-4 border-b flex items-center justify-between ${
+          className={`p-4 border-b flex items-center justify-between shrink-0 ${
             isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#0d0f15] border-slate-800'
           }`}
         >
           <div className="flex items-center space-x-2.5">
-            <div className="p-2 rounded-lg bg-blue-500/15 border border-blue-500/30 text-blue-400">
+            <div className="p-2 rounded-lg bg-blue-500/15 border border-blue-500/30 text-blue-400 shrink-0">
               <User className="w-5 h-5" />
             </div>
             <div>
@@ -133,7 +133,7 @@ export const EditTeacherContactModal: React.FC<EditTeacherContactModalProps> = (
           <button
             type="button"
             onClick={onClose}
-            className={`p-1.5 rounded-lg transition-colors ${
+            className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
               isLight
                 ? 'text-slate-400 hover:text-slate-700 hover:bg-slate-200'
                 : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800'
@@ -144,7 +144,7 @@ export const EditTeacherContactModal: React.FC<EditTeacherContactModalProps> = (
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSave} className="p-5 space-y-4 text-xs">
+        <form onSubmit={handleSave} className="p-4 sm:p-5 flex-1 overflow-y-auto space-y-4 text-xs">
           {/* Metadata Badges */}
           <div
             className={`flex flex-wrap items-center gap-2 p-2.5 rounded-xl border text-[11px] ${

@@ -20,21 +20,35 @@ interface MassNotificationModalProps {
   isOpen: boolean;
   onClose: () => void;
   allTeachers: string[];
+  initialSubject?: string;
+  initialMessageBody?: string;
 }
 
 export const MassNotificationModal: React.FC<MassNotificationModalProps> = ({
   isOpen,
   onClose,
   allTeachers,
+  initialSubject,
+  initialMessageBody,
 }) => {
   const { isLight } = useTheme();
   const [copied, setCopied] = useState(false);
   const [subject, setSubject] = useState(
-    'Aviso Oficial a la Plantilla Docente - Escuela Secundaria General No. 129'
+    initialSubject || 'Aviso Oficial a la Plantilla Docente - Escuela Secundaria General No. 129'
   );
   const [messageBody, setMessageBody] = useState(
-    'Estimados(as) Profesores(as):\n\nSe les comunica atentamente la siguiente información oficial respecto a las actividades escolares y horarios...\n\nAtentamente,\nDirección y Subdirección Escolar\nEscuela Secundaria General No. 129'
+    initialMessageBody ||
+      'Estimados(as) Profesores(as):\n\nSe les comunica atentamente la siguiente información oficial respecto a las actividades escolares y horarios...\n\nAtentamente,\nDirección y Subdirección Escolar\nEscuela Secundaria General No. 129'
   );
+
+  React.useEffect(() => {
+    if (initialSubject) setSubject(initialSubject);
+  }, [initialSubject]);
+
+  React.useEffect(() => {
+    if (initialMessageBody) setMessageBody(initialMessageBody);
+  }, [initialMessageBody]);
+
   const [searchFilter, setSearchFilter] = useState('');
   const [selectedTeachers, setSelectedTeachers] = useState<string[]>(allTeachers);
 
@@ -103,12 +117,12 @@ export const MassNotificationModal: React.FC<MassNotificationModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="mass-notification-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs animate-in fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-black/75 backdrop-blur-xs animate-in fade-in"
       onClick={onClose}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`w-full max-w-3xl rounded-2xl border shadow-2xl overflow-hidden flex flex-col max-h-[90vh] ${
+        className={`w-full max-w-sm sm:max-w-xl md:max-w-2xl lg:max-w-3xl rounded-2xl border shadow-2xl overflow-hidden flex flex-col max-h-[85vh] sm:max-h-[80dvh] ${
           isLight
             ? 'bg-white border-slate-200 text-slate-900 shadow-slate-400/40'
             : 'bg-[#10131a] border-slate-800 text-slate-100 shadow-black/80'
@@ -116,7 +130,7 @@ export const MassNotificationModal: React.FC<MassNotificationModalProps> = ({
       >
         {/* Header */}
         <div
-          className={`px-6 py-4 border-b flex items-center justify-between ${
+          className={`px-4 sm:px-6 py-4 border-b flex items-center justify-between shrink-0 ${
             isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#0b0e14] border-slate-800'
           }`}
         >
@@ -144,7 +158,7 @@ export const MassNotificationModal: React.FC<MassNotificationModalProps> = ({
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 overflow-y-auto space-y-5 flex-1">
+        <div className="p-4 sm:p-6 overflow-y-auto space-y-5 flex-1">
           {/* Quick Notice Banner */}
           <div
             className={`p-3.5 rounded-xl border flex items-start space-x-3 text-xs ${

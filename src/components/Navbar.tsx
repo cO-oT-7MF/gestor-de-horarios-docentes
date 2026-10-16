@@ -53,6 +53,7 @@ interface NavbarProps {
   onUndo?: () => void;
   onRedo?: () => void;
   onOpenShortcutsModal?: () => void;
+  onToggleCopilot?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -79,12 +80,30 @@ export const Navbar: React.FC<NavbarProps> = ({
   onUndo,
   onRedo,
   onOpenShortcutsModal,
+  onToggleCopilot,
 }) => {
   const { theme, isLight, toggleTheme } = useTheme();
   const [isOperationsMenuOpen, setIsOperationsMenuOpen] = React.useState(false);
   const [isFileMenuOpen, setIsFileMenuOpen] = React.useState(false);
   const operationsMenuRef = React.useRef<HTMLDivElement>(null);
   const fileMenuRef = React.useRef<HTMLDivElement>(null);
+  const [operationsMenuAlign, setOperationsMenuAlign] = React.useState<'left' | 'right'>('right');
+  const [fileMenuAlign, setFileMenuAlign] = React.useState<'left' | 'right'>('right');
+
+  // Dynamically detect if menu button is on the left or right of viewport to prevent off-screen clipping
+  React.useEffect(() => {
+    if (isOperationsMenuOpen && operationsMenuRef.current) {
+      const rect = operationsMenuRef.current.getBoundingClientRect();
+      setOperationsMenuAlign(rect.left < window.innerWidth / 2 ? 'left' : 'right');
+    }
+  }, [isOperationsMenuOpen]);
+
+  React.useEffect(() => {
+    if (isFileMenuOpen && fileMenuRef.current) {
+      const rect = fileMenuRef.current.getBoundingClientRect();
+      setFileMenuAlign(rect.left < window.innerWidth / 2 ? 'left' : 'right');
+    }
+  }, [isFileMenuOpen]);
 
   // Close dropdowns on click outside
   React.useEffect(() => {
@@ -487,45 +506,62 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {isOperationsMenuOpen && (
               <div
-                className={`absolute right-0 top-full mt-2 w-80 max-w-[calc(100vw-1.5rem)] max-h-[85vh] overflow-y-auto rounded-xl shadow-2xl border p-2 z-50 animate-in fade-in slide-in-from-top-2 touch-manipulation ${
+                className={`fixed inset-x-0 mx-4 top-16 sm:absolute sm:top-full sm:inset-auto sm:mt-2 ${
+                  operationsMenuAlign === 'left' ? 'sm:left-0 sm:right-auto' : 'sm:right-0 sm:left-auto'
+                } sm:mx-0 w-auto sm:w-full max-w-sm sm:max-w-md md:max-w-lg lg:w-[440px] max-h-[85vh] sm:max-h-[80dvh] flex flex-col rounded-2xl shadow-2xl border p-4 sm:p-5 z-50 animate-in fade-in slide-in-from-top-2 touch-manipulation ${
                   isLight
-                    ? 'bg-white border-slate-200 text-slate-900 shadow-slate-300/60'
-                    : 'bg-[#12151e] border-slate-800 text-slate-100 shadow-black/80'
+                    ? 'bg-white border-slate-200 text-slate-900 shadow-slate-300/80 ring-1 ring-slate-900/5'
+                    : 'bg-[#12151e] border-slate-700/80 text-slate-100 shadow-black/90 ring-1 ring-white/10'
                 }`}
               >
-                <div className="px-3 py-1.5 border-b border-slate-700/40 mb-1.5 flex items-center justify-between">
-                  <p className="text-[10px] font-black uppercase tracking-wider text-emerald-500">
-                    Operaciones del Horario
-                  </p>
-                  <span className="text-[10px] text-slate-400">Algoritmo Sec. 129</span>
+                {/* Header */}
+                <div className="px-2 py-2 border-b border-slate-700/40 mb-3.5 flex items-center justify-between shrink-0">
+                  <div className="flex items-center space-x-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-500 dark:text-emerald-400">
+                      <Sparkles className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                        Operaciones del Horario Escolar
+                      </p>
+                      <p className={`text-xs mt-0.5 ${isLight ? 'text-slate-600 font-medium' : 'text-slate-300'}`}>
+                        Generación automática, auto-ajuste de empalmes y carga docente
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 font-bold shrink-0">
+                    Sec. 129
+                  </span>
                 </div>
 
-                <div className="space-y-1">
+                <div className="space-y-2.5 flex-1 overflow-y-auto pr-1">
                   {/* Generar Horarios */}
                   {onOpenGenerateModal && (
                     <button
                       type="button"
                       id="opt-generate-schedule"
                       onClick={() => handleOperationAction(onOpenGenerateModal)}
-                      className={`w-full flex items-start space-x-2.5 p-2 rounded-lg text-left transition-colors cursor-pointer ${
-                        isLight ? 'hover:bg-emerald-50' : 'hover:bg-emerald-500/10'
+                      className={`w-full flex items-start space-x-3.5 p-3.5 sm:p-4 rounded-xl border text-left transition-all cursor-pointer ${
+                        isLight
+                          ? 'bg-slate-50 hover:bg-emerald-50 border-slate-200 hover:border-emerald-300'
+                          : 'bg-[#181c28]/80 hover:bg-emerald-950/30 border-slate-700/70 hover:border-emerald-500/40'
                       }`}
                     >
-                      <div className="p-1.5 rounded-md bg-emerald-500/15 text-emerald-400 shrink-0 mt-0.5 border border-emerald-500/30">
-                        <Sparkles className="w-4 h-4" />
+                      <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-500 dark:text-emerald-400 shrink-0 mt-0.5">
+                        <Sparkles className="w-5 h-5" />
                       </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-black text-emerald-500">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2 mb-1">
+                          <span className="text-sm sm:text-base font-bold text-emerald-600 dark:text-emerald-400">
                             Generar Horarios
                           </span>
-                          <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-bold">
+                          <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-500/30 shrink-0">
                             Recomendado
                           </span>
                         </div>
-                        <span className="text-[11px] text-slate-400 leading-tight block mt-0.5">
-                          Asigna automáticamente los 35 módulos para los 24 grupos y 41 docentes activos.
-                        </span>
+                        <p className={`text-xs sm:text-sm leading-relaxed ${isLight ? 'text-slate-700 font-medium' : 'text-slate-200'}`}>
+                          Asigna automáticamente los 35 módulos semanales para los 24 grupos y 41 docentes activos conforme a la matriz oficial.
+                        </p>
                       </div>
                     </button>
                   )}
@@ -535,63 +571,67 @@ export const Navbar: React.FC<NavbarProps> = ({
                     type="button"
                     id="opt-auto-solve"
                     onClick={() => handleOperationAction(onAutoSolve)}
-                    className={`w-full flex items-start space-x-2.5 p-2 rounded-lg text-left transition-colors cursor-pointer ${
-                      isLight ? 'hover:bg-blue-50' : 'hover:bg-blue-500/10'
+                    className={`w-full flex items-start space-x-3.5 p-3.5 sm:p-4 rounded-xl border text-left transition-all cursor-pointer ${
+                      isLight
+                        ? 'bg-slate-50 hover:bg-blue-50 border-slate-200 hover:border-blue-300'
+                        : 'bg-[#181c28]/80 hover:bg-blue-950/30 border-slate-700/70 hover:border-blue-500/40'
                     }`}
                   >
-                    <div className="p-1.5 rounded-md bg-blue-500/15 text-blue-400 shrink-0 mt-0.5 border border-blue-500/30">
-                      <Sliders className="w-4 h-4" />
+                    <div className="w-10 h-10 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-500 dark:text-blue-400 shrink-0 mt-0.5">
+                      <Sliders className="w-5 h-5" />
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-black text-blue-400">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <span className="text-sm sm:text-base font-bold text-blue-600 dark:text-blue-400">
                           Auto-Ajustar Horarios
                         </span>
                         {conflictCount > 0 ? (
-                          <span className="text-[9px] px-1.5 py-0.2 rounded bg-rose-500 text-white font-bold animate-pulse">
+                          <span className="text-xs px-2.5 py-0.5 rounded-full bg-rose-500 text-white font-bold animate-pulse shrink-0">
                             {conflictCount} empalmes
                           </span>
                         ) : (
-                          <span className="text-[9px] px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 font-bold">
+                          <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-700 dark:text-blue-300 font-bold border border-blue-500/30 shrink-0">
                             Optimizar
                           </span>
                         )}
                       </div>
-                      <span className="text-[11px] text-slate-400 leading-tight block mt-0.5">
+                      <p className={`text-xs sm:text-sm leading-relaxed ${isLight ? 'text-slate-700 font-medium' : 'text-slate-200'}`}>
                         {conflictCount > 0
-                          ? `Resuelve automáticamente los ${conflictCount} empalmes detectados.`
-                          : 'Reorganiza huecos libres y balancea la carga académica sin empalmes.'}
-                      </span>
+                          ? `Resuelve automáticamente los ${conflictCount} empalmes detectados sin romper nombramientos ni contratos.`
+                          : 'Reorganiza huecos libres y balancea la carga académica sin generar empalmes en la plantilla.'}
+                      </p>
                     </div>
                   </button>
                 </div>
 
                 {/* Sub-section: Carga Docente */}
-                <div className="pt-2 mt-2 border-t border-slate-700/60">
-                  <div className="px-2 py-0.5 mb-1 flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                    <span>Cargar Carga Académica</span>
-                    <Upload className="w-3 h-3 text-amber-400" />
+                <div className="pt-3.5 mt-3.5 border-t border-slate-700/40">
+                  <div className="px-2 py-1 mb-2 flex items-center justify-between text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <span>Gestión de Carga Docente</span>
+                    <Upload className="w-4 h-4 text-amber-500 dark:text-amber-400" />
                   </div>
 
-                  <div className="space-y-1">
+                  <div className="space-y-2.5">
                     <button
                       type="button"
                       id="opt-new-cycle"
                       onClick={() => handleUploadOptionClick('new_cycle')}
-                      className={`w-full flex items-start space-x-2.5 p-2 rounded-lg text-left transition-colors cursor-pointer ${
-                        isLight ? 'hover:bg-slate-100' : 'hover:bg-slate-800/70'
+                      className={`w-full flex items-start space-x-3.5 p-3.5 sm:p-4 rounded-xl border text-left transition-all cursor-pointer ${
+                        isLight
+                          ? 'bg-slate-50 hover:bg-amber-50 border-slate-200 hover:border-amber-300'
+                          : 'bg-[#181c28]/80 hover:bg-amber-950/30 border-slate-700/70 hover:border-amber-500/40'
                       }`}
                     >
-                      <div className="p-1.5 rounded-md bg-amber-500/15 text-amber-400 shrink-0 mt-0.5 border border-amber-500/30">
-                        <CalendarPlus className="w-4 h-4" />
+                      <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-500 dark:text-amber-400 shrink-0 mt-0.5">
+                        <CalendarPlus className="w-5 h-5" />
                       </div>
-                      <div>
-                        <span className="text-xs font-bold block text-slate-200">
+                      <div className="flex-1 min-w-0">
+                        <span className={`text-sm sm:text-base font-bold block mb-1 ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
                           Iniciar nuevo ciclo escolar
                         </span>
-                        <span className="text-[11px] text-slate-400 leading-tight block">
-                          Cargar documento de asignación docente y recrear la malla completa.
-                        </span>
+                        <p className={`text-xs sm:text-sm leading-relaxed ${isLight ? 'text-slate-700 font-medium' : 'text-slate-200'}`}>
+                          Cargar documento oficial de asignación docente para estructurar la malla horaria completa.
+                        </p>
                       </div>
                     </button>
 
@@ -599,45 +639,49 @@ export const Navbar: React.FC<NavbarProps> = ({
                       type="button"
                       id="opt-add-teacher"
                       onClick={() => handleUploadOptionClick('add_teacher')}
-                      className={`w-full flex items-start space-x-2.5 p-2 rounded-lg text-left transition-colors cursor-pointer ${
-                        isLight ? 'hover:bg-slate-100' : 'hover:bg-slate-800/70'
+                      className={`w-full flex items-start space-x-3.5 p-3.5 sm:p-4 rounded-xl border text-left transition-all cursor-pointer ${
+                        isLight
+                          ? 'bg-slate-50 hover:bg-sky-50 border-slate-200 hover:border-sky-300'
+                          : 'bg-[#181c28]/80 hover:bg-sky-950/30 border-slate-700/70 hover:border-sky-500/40'
                       }`}
                     >
-                      <div className="p-1.5 rounded-md bg-sky-500/15 text-sky-400 shrink-0 mt-0.5 border border-sky-500/30">
-                        <UserPlus className="w-4 h-4" />
+                      <div className="w-10 h-10 rounded-xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-500 dark:text-sky-400 shrink-0 mt-0.5">
+                        <UserPlus className="w-5 h-5" />
                       </div>
-                      <div>
-                        <span className="text-xs font-bold block text-slate-200">
+                      <div className="flex-1 min-w-0">
+                        <span className={`text-sm sm:text-base font-bold block mb-1 ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
                           Agregar nuevo docente
                         </span>
-                        <span className="text-[11px] text-slate-400 leading-tight block">
-                          Inserta módulos en huecos libres sin desacomodar las materias existentes.
-                        </span>
+                        <p className={`text-xs sm:text-sm leading-relaxed ${isLight ? 'text-slate-700 font-medium' : 'text-slate-200'}`}>
+                          Inserta módulos en huecos libres sin desacomodar las materias existentes de los grupos escolares.
+                        </p>
                       </div>
                     </button>
                   </div>
                 </div>
 
                 {/* Maintenance Section */}
-                <div className="pt-2 mt-2 border-t border-slate-700/60">
+                <div className="pt-3 mt-3 border-t border-slate-700/40">
                   <button
                     type="button"
                     id="opt-reset-factory"
                     onClick={() => handleUploadOptionClick('reset_initial')}
-                    className={`w-full flex items-center space-x-2.5 p-2 rounded-lg text-left transition-colors cursor-pointer ${
-                      isLight ? 'hover:bg-orange-50' : 'hover:bg-orange-500/10'
+                    className={`w-full flex items-center space-x-3.5 p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                      isLight
+                        ? 'bg-orange-50 hover:bg-orange-100 border-orange-200'
+                        : 'bg-orange-950/20 hover:bg-orange-950/40 border-orange-500/30'
                     }`}
                   >
-                    <div className="p-1.5 rounded-md bg-orange-500/15 text-orange-400 shrink-0 border border-orange-500/30">
-                      <ShieldAlert className="w-3.5 h-3.5" />
+                    <div className="w-9 h-9 rounded-lg bg-orange-500/15 text-orange-500 dark:text-orange-400 shrink-0 border border-orange-500/30 flex items-center justify-center">
+                      <ShieldAlert className="w-4 h-4" />
                     </div>
-                    <div className="flex-1">
-                      <span className="text-xs font-semibold block text-orange-400">
+                    <div className="flex-1 min-w-0">
+                      <span className="text-xs sm:text-sm font-bold block text-orange-600 dark:text-orange-400">
                         Restablecer valores iniciales...
                       </span>
-                      <span className="text-[10px] text-slate-400 block">
+                      <p className={`text-xs leading-snug truncate ${isLight ? 'text-slate-700 font-medium' : 'text-slate-300'}`}>
                         Plantilla base oficial de la Secundaria 129
-                      </span>
+                      </p>
                     </div>
                   </button>
                 </div>
@@ -683,38 +727,50 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {isFileMenuOpen && (
               <div
-                className={`absolute right-0 top-full mt-2 w-72 max-w-[calc(100vw-1.5rem)] max-h-[85vh] overflow-y-auto rounded-xl shadow-2xl border p-2 z-50 animate-in fade-in slide-in-from-top-2 touch-manipulation ${
+                className={`fixed inset-x-0 mx-4 top-16 sm:absolute sm:top-full sm:inset-auto sm:mt-2 ${
+                  fileMenuAlign === 'left' ? 'sm:left-0 sm:right-auto' : 'sm:right-0 sm:left-auto'
+                } sm:mx-0 w-auto sm:w-full max-w-sm sm:max-w-md md:max-w-lg lg:w-[440px] max-h-[85vh] sm:max-h-[80dvh] flex flex-col rounded-2xl shadow-2xl border p-3.5 sm:p-4 z-50 animate-in fade-in slide-in-from-top-2 touch-manipulation ${
                   isLight
-                    ? 'bg-white border-slate-200 text-slate-900 shadow-slate-300/60'
-                    : 'bg-[#12151e] border-slate-800 text-slate-100 shadow-black/80'
+                    ? 'bg-white border-slate-200 text-slate-900 shadow-slate-300/80 ring-1 ring-slate-900/5'
+                    : 'bg-[#12151e] border-slate-700/80 text-slate-100 shadow-black/90 ring-1 ring-white/10'
                 }`}
               >
-                <div className="px-3 py-1.5 border-b border-slate-700/40 mb-1.5 flex items-center justify-between">
-                  <p className="text-[10px] font-black uppercase tracking-wider text-amber-500">
-                    Archivo y Documentos
-                  </p>
-                  <span className="text-[10px] text-slate-400">Salidas</span>
+                <div className="px-3 py-2 border-b border-slate-700/50 mb-3 flex items-center justify-between shrink-0">
+                  <div className="flex items-center space-x-2">
+                    <FolderDown className="w-4 h-4 text-amber-500 dark:text-amber-400 shrink-0" />
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                        Archivo y Documentos
+                      </p>
+                      <p className={`text-[11px] ${isLight ? 'text-slate-600 font-medium' : 'text-slate-400'}`}>
+                        Respaldo, impresión y exportación
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30 font-semibold">
+                    Salidas
+                  </span>
                 </div>
 
-                <div className="space-y-1">
+                <div className="space-y-2 flex-1 overflow-y-auto pr-1">
                   {/* Guardar Horario */}
                   {onManualAutoSave && (
                     <button
                       type="button"
                       id="opt-save-schedule"
                       onClick={() => handleFileAction(onManualAutoSave)}
-                      className={`w-full flex items-start space-x-2.5 p-2 rounded-lg text-left transition-colors cursor-pointer ${
+                      className={`w-full flex items-start space-x-3 p-3 rounded-xl border text-left transition-all cursor-pointer ${
                         hasUnsavedChanges
                           ? isLight
-                            ? 'bg-amber-50 hover:bg-amber-100'
-                            : 'bg-amber-950/30 hover:bg-amber-950/50'
+                            ? 'bg-amber-50/80 hover:bg-amber-100/90 border-amber-300'
+                            : 'bg-amber-950/30 hover:bg-amber-950/50 border-amber-500/40'
                           : isLight
-                          ? 'hover:bg-slate-100'
-                          : 'hover:bg-slate-800/70'
+                          ? 'bg-slate-50/80 hover:bg-slate-100 border-slate-200'
+                          : 'bg-[#181c28]/70 hover:bg-slate-800/80 border-slate-800'
                       }`}
                     >
                       <div
-                        className={`p-1.5 rounded-md shrink-0 mt-0.5 border ${
+                        className={`w-9 h-9 rounded-xl shrink-0 mt-0.5 border flex items-center justify-center ${
                           hasUnsavedChanges
                             ? 'bg-amber-500/20 text-amber-400 border-amber-500/40'
                             : 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
@@ -722,17 +778,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                       >
                         <Save className="w-4 h-4" />
                       </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-1 mb-1">
                           <span
-                            className={`text-xs font-black ${
-                              hasUnsavedChanges ? 'text-amber-400' : 'text-slate-200'
+                            className={`text-sm font-bold ${
+                              hasUnsavedChanges ? 'text-amber-600 dark:text-amber-400' : isLight ? 'text-slate-900' : 'text-slate-100'
                             }`}
                           >
                             {hasUnsavedChanges ? 'Guardar Cambios *' : 'Guardar Horario'}
                           </span>
                           <kbd
-                            className={`text-[9px] px-1 py-0.2 rounded font-mono font-bold ${
+                            className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-bold ${
                               isLight
                                 ? 'bg-slate-200 text-slate-700'
                                 : 'bg-slate-800 text-slate-300'
@@ -741,13 +797,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                             Ctrl+S
                           </kbd>
                         </div>
-                        <span className="text-[11px] text-slate-400 leading-tight block mt-0.5">
+                        <p className={`text-xs leading-relaxed ${isLight ? 'text-slate-600 font-medium' : 'text-slate-300'}`}>
                           {hasUnsavedChanges
                             ? 'Hay modificaciones pendientes por guardar en almacenamiento.'
                             : lastSavedTimestamp
                             ? `Respaldo sincronizado (${new Date(lastSavedTimestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}).`
                             : 'Guardar copia de seguridad en el navegador.'}
-                        </span>
+                        </p>
                       </div>
                     </button>
                   )}
@@ -757,20 +813,22 @@ export const Navbar: React.FC<NavbarProps> = ({
                     type="button"
                     id="opt-print-schedule"
                     onClick={() => handleFileAction(onOpenPrintModal)}
-                    className={`w-full flex items-start space-x-2.5 p-2 rounded-lg text-left transition-colors cursor-pointer ${
-                      isLight ? 'hover:bg-violet-50' : 'hover:bg-violet-500/10'
+                    className={`w-full flex items-start space-x-3 p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                      isLight
+                        ? 'bg-slate-50/80 hover:bg-violet-50/70 border-slate-200 hover:border-violet-300'
+                        : 'bg-[#181c28]/70 hover:bg-violet-950/20 border-slate-800 hover:border-violet-500/40'
                     }`}
                   >
-                    <div className="p-1.5 rounded-md bg-violet-500/15 text-violet-400 shrink-0 mt-0.5 border border-violet-500/30">
+                    <div className="w-9 h-9 rounded-xl bg-violet-500/15 text-violet-400 shrink-0 mt-0.5 border border-violet-500/30 flex items-center justify-center">
                       <Printer className="w-4 h-4" />
                     </div>
-                    <div className="flex-1">
-                      <span className="text-xs font-bold block text-slate-200">
+                    <div className="flex-1 min-w-0">
+                      <span className={`text-sm font-bold block mb-0.5 ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
                         Imprimir Horarios
                       </span>
-                      <span className="text-[11px] text-slate-400 leading-tight block mt-0.5">
-                        Formatos oficiales para impresión física o guardado en PDF por grupo o docente.
-                      </span>
+                      <p className={`text-xs leading-relaxed ${isLight ? 'text-slate-600 font-medium' : 'text-slate-300'}`}>
+                        Formatos oficiales para impresión física o exportación PDF por grupo o docente.
+                      </p>
                     </div>
                   </button>
 
@@ -779,20 +837,22 @@ export const Navbar: React.FC<NavbarProps> = ({
                     type="button"
                     id="opt-export-schedule"
                     onClick={() => handleFileAction(onOpenExportModal)}
-                    className={`w-full flex items-start space-x-2.5 p-2 rounded-lg text-left transition-colors cursor-pointer ${
-                      isLight ? 'hover:bg-teal-50' : 'hover:bg-teal-500/10'
+                    className={`w-full flex items-start space-x-3 p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                      isLight
+                        ? 'bg-slate-50/80 hover:bg-teal-50/70 border-slate-200 hover:border-teal-300'
+                        : 'bg-[#181c28]/70 hover:bg-teal-950/20 border-slate-800 hover:border-teal-500/40'
                     }`}
                   >
-                    <div className="p-1.5 rounded-md bg-teal-500/15 text-teal-400 shrink-0 mt-0.5 border border-teal-500/30">
+                    <div className="w-9 h-9 rounded-xl bg-teal-500/15 text-teal-400 shrink-0 mt-0.5 border border-teal-500/30 flex items-center justify-center">
                       <Download className="w-4 h-4" />
                     </div>
-                    <div className="flex-1">
-                      <span className="text-xs font-bold block text-slate-200">
+                    <div className="flex-1 min-w-0">
+                      <span className={`text-sm font-bold block mb-0.5 ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
                         Exportar a Excel / CSV / JSON
                       </span>
-                      <span className="text-[11px] text-slate-400 leading-tight block mt-0.5">
+                      <p className={`text-xs leading-relaxed ${isLight ? 'text-slate-600 font-medium' : 'text-slate-300'}`}>
                         Descarga la sábana completa en hojas de cálculo o genera un respaldo JSON.
-                      </span>
+                      </p>
                     </div>
                   </button>
                 </div>
@@ -800,8 +860,26 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </div>
 
-          {/* Divider */}
-          <div className="h-6 w-px bg-slate-800/90 hidden sm:block mx-1" />
+          {/* Copiloto Operativo Escolar IA Button */}
+          {onToggleCopilot && (
+            <button
+              id="copiloto-ai-btn"
+              type="button"
+              onClick={onToggleCopilot}
+              title="Abrir Copiloto Operativo Escolar IA (Ctrl+K)"
+              className={`flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all border cursor-pointer active:scale-95 shadow-sm ${
+                isLight
+                  ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-600 shadow-amber-500/20'
+                  : 'bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white border-amber-500/40 shadow-amber-900/30'
+              }`}
+            >
+              <Sparkles className="w-4 h-4 text-amber-200 animate-pulse" />
+              <span className="font-bold">Copiloto IA</span>
+              <kbd className="hidden 2xl:inline text-[9px] px-1 py-0.2 rounded bg-black/30 font-mono text-amber-100">
+                Ctrl+K
+              </kbd>
+            </button>
+          )}
 
           {/* Quick Plantel & Theme Buttons */}
           <button

@@ -59,6 +59,12 @@ export const ShortcutsHelpModal: React.FC<ShortcutsHelpModalProps> = ({
           icon: <RotateCw className="w-4 h-4 text-emerald-400" />,
         },
         {
+          keys: [modKey, 'K'],
+          label: 'Abrir Copiloto Operativo Escolar IA',
+          description: 'Abre el chat inteligente para optimización, huecos y consultas de plantilla.',
+          icon: <Sparkles className="w-4 h-4 text-amber-400" />,
+        },
+        {
           keys: [modKey, 'Shift', 'A'],
           label: 'Auto-Ajustar horarios',
           description: 'Ejecuta el algoritmo de resolución fluida de empalmes.',
@@ -141,11 +147,11 @@ export const ShortcutsHelpModal: React.FC<ShortcutsHelpModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-black/70 backdrop-blur-xs animate-in fade-in duration-150"
       onClick={onClose}
     >
       <div
-        className={`w-full max-w-2xl rounded-2xl shadow-2xl border overflow-hidden transition-all ${
+        className={`w-full max-w-sm sm:max-w-md md:max-w-xl lg:max-w-2xl max-h-[85vh] sm:max-h-[80dvh] flex flex-col rounded-2xl shadow-2xl border overflow-hidden transition-all ${
           isLight
             ? 'bg-white border-slate-200 text-slate-900 shadow-slate-400/50'
             : 'bg-[#0f1117] border-slate-800 text-slate-100 shadow-black/80'
@@ -153,9 +159,9 @@ export const ShortcutsHelpModal: React.FC<ShortcutsHelpModalProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800/60 bg-gradient-to-r from-amber-500/10 via-transparent to-transparent">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-slate-800/60 bg-gradient-to-r from-amber-500/10 via-transparent to-transparent shrink-0">
           <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30">
+            <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 shrink-0">
               <Keyboard className="w-5 h-5" />
             </div>
             <div>
@@ -180,7 +186,7 @@ export const ShortcutsHelpModal: React.FC<ShortcutsHelpModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-6 max-h-[75vh] overflow-y-auto space-y-6">
+        <div className="p-4 sm:p-6 flex-1 overflow-y-auto space-y-6">
           {shortcutGroups.map((group) => (
             <div key={group.category} className="space-y-2.5">
               <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 flex items-center gap-2">

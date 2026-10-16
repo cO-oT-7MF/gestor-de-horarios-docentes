@@ -606,10 +606,10 @@ export const PrintScheduleModal: React.FC<PrintScheduleModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-4 print:p-0 print:bg-white animate-in fade-in print-modal-overlay">
-      <div className="bg-[#111318] rounded-2xl max-w-4xl w-full shadow-2xl border border-slate-800/90 overflow-hidden flex flex-col max-h-[92vh] print:max-h-none print:shadow-none print:border-none print:rounded-none">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-3 sm:p-4 md:p-6 print:p-0 print:bg-white animate-in fade-in print-modal-overlay">
+      <div className="bg-[#111318] rounded-2xl w-full max-w-sm sm:max-w-xl md:max-w-3xl lg:max-w-4xl shadow-2xl border border-slate-800/90 overflow-hidden flex flex-col max-h-[85vh] sm:max-h-[80dvh] print:max-h-none print:shadow-none print:border-none print:rounded-none">
         {/* Modal Header & Actions Bar (Hidden during print) */}
-        <div className="p-4 bg-[#0a0c10] border-b border-slate-800 text-white flex flex-wrap items-center justify-between gap-3 print:hidden">
+        <div className="p-4 bg-[#0a0c10] border-b border-slate-800 text-white flex flex-wrap items-center justify-between gap-3 shrink-0 print:hidden">
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
               <Printer className="w-4 h-4 text-amber-400" />
@@ -669,7 +669,7 @@ export const PrintScheduleModal: React.FC<PrintScheduleModalProps> = ({
         </div>
 
         {/* Options Toolbar (Hidden during print) */}
-        <div className="p-3.5 bg-[#16181f] border-b border-slate-800 flex flex-wrap items-center justify-between gap-3 print:hidden">
+        <div className="p-3.5 bg-[#16181f] border-b border-slate-800 flex flex-wrap items-center justify-between gap-3 shrink-0 print:hidden">
           {/* View Mode Switch */}
           <div className="flex items-center space-x-1.5">
             <button
@@ -780,7 +780,7 @@ export const PrintScheduleModal: React.FC<PrintScheduleModalProps> = ({
         )}
 
         {/* Printable Preview Sheet Container */}
-        <div className="p-4 sm:p-6 md:p-8 overflow-y-auto bg-[#0a0a0a]/70 print:bg-white print:p-0">
+        <div className="p-4 sm:p-6 md:p-8 overflow-y-auto flex-1 bg-[#0a0a0a]/70 print:bg-white print:p-0">
           <div
             ref={printSheetRef}
             className="print-sheet-card bg-white text-slate-900 p-6 sm:p-8 rounded-xl shadow-xl print:shadow-none print:rounded-none print:p-2 space-y-5 max-w-3xl mx-auto border border-slate-200"

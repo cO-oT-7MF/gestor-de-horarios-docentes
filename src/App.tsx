@@ -48,6 +48,9 @@ import { GenerateScheduleModal } from './components/GenerateScheduleModal';
 import { RestoreInitialModal } from './components/RestoreInitialModal';
 import { ShortcutsHelpModal } from './components/ShortcutsHelpModal';
 import { ToastNotification, ToastData } from './components/ToastNotification';
+import { CopilotoEscolarChat } from './components/CopilotoEscolarChat';
+import { MassNotificationModal } from './components/MassNotificationModal';
+import { Sparkles } from 'lucide-react';
 import { generateFullScheduleFromWorkload } from './utils/scheduler';
 import { getInitialFactoryData, integrateNewTeacherWorkload } from './utils/googleDocParser';
 import { getLastKnownGoodSnapshot } from './utils/autoSave';
@@ -303,6 +306,10 @@ function ScheduleApp() {
   const [isRestoreInitialOpen, setIsRestoreInitialOpen] = useState(false);
   const [isGenerateScheduleOpen, setIsGenerateScheduleOpen] = useState(false);
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
+  const [isCopilotOpen, setIsCopilotOpen] = useState(false);
+  const [isMassNotificationOpen, setIsMassNotificationOpen] = useState(false);
+  const [massNotificationSubject, setMassNotificationSubject] = useState<string | undefined>(undefined);
+  const [massNotificationBody, setMassNotificationBody] = useState<string | undefined>(undefined);
 
   // Global Toast Notifications
   const [toast, setToast] = useState<ToastData | null>(null);
@@ -749,7 +756,9 @@ function ScheduleApp() {
       }
     },
     onToggleHelp: () => setIsShortcutsModalOpen((prev) => !prev),
+    onToggleCopilot: () => setIsCopilotOpen((prev) => !prev),
     onEscape: () => {
+      setIsCopilotOpen(false);
       setIsShortcutsModalOpen(false);
       setEditModalState((prev) => ({ ...prev, isOpen: false }));
       setIsSchoolSettingsOpen(false);
@@ -796,6 +805,7 @@ function ScheduleApp() {
         onUndo={handleUndo}
         onRedo={handleRedo}
         onOpenShortcutsModal={() => setIsShortcutsModalOpen(true)}
+        onToggleCopilot={() => setIsCopilotOpen((prev) => !prev)}
       />
 
       {/* Main View Content */}
@@ -989,6 +999,76 @@ function ScheduleApp() {
         isOpen={isShortcutsModalOpen}
         onClose={() => setIsShortcutsModalOpen(false)}
       />
+
+      {/* Copiloto Operativo Escolar IA Chatbot */}
+      <CopilotoEscolarChat
+        isOpen={isCopilotOpen}
+        onClose={() => setIsCopilotOpen(false)}
+        activeTab={activeTab}
+        onNavigateTab={(tab) => setActiveTab(tab)}
+        schoolInfo={schoolInfo}
+        selectedTeacher={selectedTeacher}
+        onSelectTeacher={setSelectedTeacher}
+        selectedGroupId={selectedGroupId}
+        onSelectGroup={setSelectedGroupId}
+        entries={entries}
+        academicLoads={academicLoads}
+        allTeachers={allTeachers}
+        conflicts={conflicts}
+        groups={GROUPS}
+        timeSlots={timeSlots}
+        onSolveAllConflicts={handleGlobalAutoSolve}
+        onOpenMassNotification={(sub, body) => {
+          if (sub) setMassNotificationSubject(sub);
+          if (body) setMassNotificationBody(body);
+          setIsMassNotificationOpen(true);
+        }}
+        onShowToast={showToast}
+      />
+
+      {/* Mass Notification Modal for Broadcast Notices / Circulars */}
+      <MassNotificationModal
+        isOpen={isMassNotificationOpen}
+        onClose={() => setIsMassNotificationOpen(false)}
+        allTeachers={allTeachers}
+        initialSubject={massNotificationSubject}
+        initialMessageBody={massNotificationBody}
+      />
+
+      {/* Floating launcher widget button when closed */}
+      {!isCopilotOpen && (
+        <button
+          id="copiloto-floating-trigger-btn"
+          onClick={() => setIsCopilotOpen(true)}
+          className={`fixed bottom-5 right-5 z-40 flex items-center gap-2.5 px-4 py-3 rounded-full shadow-2xl transition-all duration-200 cursor-pointer active:scale-95 group hover:-translate-y-0.5 ${
+            isLight
+              ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-amber-500/30 hover:shadow-amber-500/50'
+              : 'bg-gradient-to-r from-amber-600 to-amber-700 text-white border border-amber-400/30 shadow-amber-900/50 hover:shadow-amber-600/50'
+          }`}
+          title="Abrir Copiloto Operativo Escolar IA (Ctrl+K)"
+        >
+          <div className="relative">
+            <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+              <Sparkles className="w-4 h-4 text-white animate-pulse" />
+            </span>
+            {conflicts.length > 0 && (
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-rose-500 rounded-full border-2 border-white animate-ping" />
+            )}
+          </div>
+          <div className="flex flex-col text-left">
+            <span className="text-xs font-bold leading-tight flex items-center gap-1.5">
+              Copiloto IA
+              <span className="text-[10px] opacity-75 font-mono">Sec. 129</span>
+            </span>
+            <span className="text-[10px] text-amber-100/90 leading-none">
+              {conflicts.length > 0 ? `${conflicts.length} empalmes activos` : 'Plantilla 100% óptima'}
+            </span>
+          </div>
+          <kbd className="hidden sm:inline-block text-[9px] px-1.5 py-0.5 rounded bg-black/25 font-mono text-amber-100 ml-1">
+            Ctrl+K
+          </kbd>
+        </button>
+      )}
 
       {/* Global Shortcut and Action Toast Notification */}
       <ToastNotification toast={toast} onDismiss={() => setToast(null)} />

@@ -1543,7 +1543,7 @@ export const TeacherScheduleView: React.FC<TeacherScheduleViewProps> = ({
                           >
                             <div
                               className="absolute left-0 top-0 bottom-0 w-1.5"
-                              style={{ backgroundColor: subCfg.badgeColor || '#f59e0b' }}
+                              style={{ backgroundColor: subCfg.color || '#f59e0b' }}
                             />
                             <div className="pl-2.5">
                               <div className="flex items-center justify-between gap-2 mb-1.5 flex-wrap">
