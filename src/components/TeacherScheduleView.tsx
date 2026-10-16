@@ -700,7 +700,7 @@ export const TeacherScheduleView: React.FC<TeacherScheduleViewProps> = ({
               </div>
               <div className="text-xl font-extrabold text-slate-100">
                 {teacherStats.totalHours}{' '}
-                <span className="text-xs font-medium text-slate-500">
+                <span className="text-xs font-medium text-slate-400">
                   / {selectedTeacherContract.expectedHours} módulos ({selectedTeacherContract.percentage}%)
                 </span>
               </div>
@@ -728,7 +728,7 @@ export const TeacherScheduleView: React.FC<TeacherScheduleViewProps> = ({
             </div>
             <div className="text-xl font-extrabold text-emerald-400">
               {teacherStats.freeHoursFrom35}{' '}
-              <span className="text-xs font-medium text-slate-500">módulos</span>
+              <span className="text-xs font-medium text-slate-400">módulos</span>
             </div>
           </div>
 
@@ -739,7 +739,7 @@ export const TeacherScheduleView: React.FC<TeacherScheduleViewProps> = ({
             </div>
             <div className="text-xl font-extrabold text-slate-100">
               {teacherStats.groups.length}{' '}
-              <span className="text-xs font-medium text-slate-500">grupos</span>
+              <span className="text-xs font-medium text-slate-400">grupos</span>
             </div>
           </div>
 
@@ -760,13 +760,13 @@ export const TeacherScheduleView: React.FC<TeacherScheduleViewProps> = ({
             </div>
             <div className="text-xl font-extrabold text-slate-100">
               {teacherStats.intermediateGaps}{' '}
-              <span className="text-xs font-medium text-slate-500">periodos</span>
+              <span className="text-xs font-medium text-slate-400">periodos</span>
             </div>
           </div>
 
           <div className="bg-[#16181f] rounded-lg p-3 border border-slate-800/80">
             <div className="flex items-center space-x-2 text-slate-400 text-xs font-semibold mb-1">
-              <AlertCircle className={`w-3.5 h-3.5 ${teacherConflicts.length > 0 ? 'text-rose-400' : 'text-slate-500'}`} />
+              <AlertCircle className={`w-3.5 h-3.5 ${teacherConflicts.length > 0 ? 'text-rose-400' : 'text-slate-400'}`} />
               <span>Estado Empalmes</span>
             </div>
             <div className={`text-sm font-bold ${teacherConflicts.length > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
@@ -1050,7 +1050,7 @@ export const TeacherScheduleView: React.FC<TeacherScheduleViewProps> = ({
               })}
               {teacherGroups.length > 1 && (
                 <div className={`flex items-center gap-1 ml-2 border-l pl-2 ${isLight ? 'border-slate-300' : 'border-slate-700/60'}`}>
-                  <span className={`text-[10px] font-bold ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>Grupos:</span>
+                  <span className="text-[10px] font-bold text-slate-400">Grupos:</span>
                   {teacherGroups.map((grp) => {
                     const isActive = trimmedSearch === grp.toLowerCase();
                     return (
@@ -1558,9 +1558,9 @@ export const TeacherScheduleView: React.FC<TeacherScheduleViewProps> = ({
 
                               <div className="flex items-center justify-between gap-3">
                                 <div>
-                                  <h4 className="text-sm font-black text-slate-100">
+                                  <h3 className="text-sm font-black text-slate-100">
                                     {entry.subject}
-                                  </h4>
+                                  </h3>
                                   <p className="text-xs text-slate-400 mt-0.5">
                                     Docente: <strong className="text-slate-200">{selectedTeacher}</strong>
                                   </p>

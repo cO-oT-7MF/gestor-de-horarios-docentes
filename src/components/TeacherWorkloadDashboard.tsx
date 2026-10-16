@@ -249,7 +249,7 @@ export const TeacherWorkloadDashboard: React.FC<TeacherWorkloadDashboardProps> =
                 {completeCount}{' '}
                 <span className="text-xs font-semibold text-emerald-400/80">docentes</span>
               </div>
-              <p className="text-[11px] text-emerald-400/70 mt-1">Horas asignadas equivalentes a contrato</p>
+              <p className="text-[11px] text-emerald-300 font-medium mt-1">Horas asignadas equivalentes a contrato</p>
             </div>
 
             {/* KPI 3: Under (Pending Hours) */}
@@ -269,7 +269,7 @@ export const TeacherWorkloadDashboard: React.FC<TeacherWorkloadDashboardProps> =
                 {missingHours}{' '}
                 <span className="text-xs font-semibold text-amber-400/80">hrs faltantes</span>
               </div>
-              <p className="text-[11px] text-amber-400/70 mt-1">
+              <p className="text-[11px] text-amber-300 font-medium mt-1">
                 {underCount} docente{underCount !== 1 ? 's' : ''} con horas por asignar
               </p>
             </div>
@@ -291,7 +291,7 @@ export const TeacherWorkloadDashboard: React.FC<TeacherWorkloadDashboardProps> =
                 +{extraHours}{' '}
                 <span className="text-xs font-semibold text-rose-400/80">hrs extras</span>
               </div>
-              <p className="text-[11px] text-rose-400/70 mt-1">Horas asignadas por encima de carga</p>
+              <p className="text-[11px] text-rose-300 font-medium mt-1">Horas asignadas por encima de carga</p>
             </div>
           </div>
 
@@ -466,7 +466,7 @@ export const TeacherWorkloadDashboard: React.FC<TeacherWorkloadDashboardProps> =
                       <div className="space-y-1.5 my-2">
                         <div className="flex items-center justify-between text-[11px]">
                           <span className="font-bold text-slate-300">
-                            {t.assignedHours} <span className="text-slate-500 font-normal">/ {t.expectedHours} hrs</span>
+                            {t.assignedHours} <span className="text-slate-400 font-medium">/ {t.expectedHours} hrs</span>
                           </span>
                           <span
                             className={`font-black ${
