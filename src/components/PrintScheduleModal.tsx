@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { ModalPortal } from './ModalPortal';
 
 interface PrintScheduleModalProps {
   isOpen: boolean;
@@ -606,8 +607,16 @@ export const PrintScheduleModal: React.FC<PrintScheduleModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-3 sm:p-4 md:p-6 print:p-0 print:bg-white animate-in fade-in print-modal-overlay">
-      <div className="bg-[#111318] rounded-2xl w-full max-w-sm sm:max-w-xl md:max-w-3xl lg:max-w-4xl shadow-2xl border border-slate-800/90 overflow-hidden flex flex-col max-h-[85vh] sm:max-h-[80dvh] print:max-h-none print:shadow-none print:border-none print:rounded-none">
+    <ModalPortal
+      isOpen={isOpen}
+      onClose={onClose}
+      ariaLabel="Impresión Oficial y Guardar en PDF"
+      backdropClassName="print:p-0 print:bg-white print-modal-overlay"
+    >
+      <div
+        className="relative z-[10000] bg-[#111318] rounded-2xl w-full max-w-sm sm:max-w-xl md:max-w-3xl lg:max-w-4xl shadow-2xl border border-slate-800/90 overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh] print:max-h-none print:shadow-none print:border-none print:rounded-none"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Modal Header & Actions Bar (Hidden during print) */}
         <div className="p-4 bg-[#0a0c10] border-b border-slate-800 text-white flex flex-wrap items-center justify-between gap-3 shrink-0 print:hidden">
           <div className="flex items-center space-x-2">
@@ -1118,6 +1127,6 @@ export const PrintScheduleModal: React.FC<PrintScheduleModalProps> = ({
           </div>
         </div>
       </div>
-    </div>
+    </ModalPortal>
   );
 };

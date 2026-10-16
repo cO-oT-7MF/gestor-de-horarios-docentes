@@ -1,6 +1,7 @@
 import React from 'react';
 import { RotateCcw, X, AlertCircle, CheckCircle2, School, Calendar, Users, Sparkles } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { ModalPortal } from './ModalPortal';
 
 interface RestoreInitialModalProps {
   isOpen: boolean;
@@ -25,13 +26,18 @@ export const RestoreInitialModal: React.FC<RestoreInitialModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-3 sm:p-4 md:p-6 animate-in fade-in">
+    <ModalPortal
+      isOpen={isOpen}
+      onClose={onClose}
+      ariaLabel="Restablecer Valores Iniciales"
+    >
       <div
-        className={`rounded-2xl w-full max-w-sm sm:max-w-md md:max-w-lg lg:w-[480px] max-h-[85vh] sm:max-h-[80dvh] shadow-2xl border overflow-hidden flex flex-col transition-all ${
+        className={`relative z-[10000] rounded-2xl w-full max-w-sm sm:max-w-md md:max-w-lg lg:w-[480px] max-h-[90vh] sm:max-h-[85vh] shadow-2xl border overflow-hidden flex flex-col transition-all ${
           isLight
             ? 'bg-white border-slate-200 text-slate-900 shadow-slate-300/80'
             : 'bg-[#111318] border-slate-800 text-slate-100 shadow-black/90'
         }`}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div
@@ -178,6 +184,6 @@ export const RestoreInitialModal: React.FC<RestoreInitialModalProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </ModalPortal>
   );
 };

@@ -21,6 +21,7 @@ import {
 } from '../data/teacherCatalog';
 import { WhatsAppIcon } from './TeacherContactBadge';
 import { useTheme } from '../context/ThemeContext';
+import { ModalPortal } from './ModalPortal';
 
 interface EditTeacherContactModalProps {
   isOpen: boolean;
@@ -105,13 +106,18 @@ export const EditTeacherContactModal: React.FC<EditTeacherContactModalProps> = (
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-3 sm:p-4 md:p-6 animate-in fade-in">
+    <ModalPortal
+      isOpen={isOpen}
+      onClose={onClose}
+      ariaLabel="Editar Datos de Contacto Directo"
+    >
       <div
-        className={`rounded-2xl w-full max-w-sm sm:max-w-md md:max-w-lg lg:w-[480px] max-h-[85vh] sm:max-h-[80dvh] shadow-2xl border overflow-hidden flex flex-col transition-all ${
+        className={`relative z-[10000] rounded-2xl w-full max-w-sm sm:max-w-md md:max-w-lg lg:w-[480px] max-h-[90vh] sm:max-h-[85vh] shadow-2xl border overflow-hidden flex flex-col transition-all ${
           isLight
             ? 'bg-white border-slate-300 text-slate-800'
             : 'bg-[#12141a] border-slate-800 text-slate-100 shadow-slate-950/60'
         }`}
+        onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
       >
@@ -326,6 +332,6 @@ export const EditTeacherContactModal: React.FC<EditTeacherContactModalProps> = (
           </div>
         </form>
       </div>
-    </div>
+    </ModalPortal>
   );
 };

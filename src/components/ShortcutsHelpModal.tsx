@@ -16,6 +16,7 @@ import {
   Clock,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { ModalPortal } from './ModalPortal';
 
 interface ShortcutsHelpModalProps {
   isOpen: boolean;
@@ -146,12 +147,13 @@ export const ShortcutsHelpModal: React.FC<ShortcutsHelpModalProps> = ({
   ];
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-black/70 backdrop-blur-xs animate-in fade-in duration-150"
-      onClick={onClose}
+    <ModalPortal
+      isOpen={isOpen}
+      onClose={onClose}
+      ariaLabel="Atajos de teclado"
     >
       <div
-        className={`w-full max-w-sm sm:max-w-md md:max-w-xl lg:max-w-2xl max-h-[85vh] sm:max-h-[80dvh] flex flex-col rounded-2xl shadow-2xl border overflow-hidden transition-all ${
+        className={`relative z-[10000] w-full max-w-sm sm:max-w-md md:max-w-xl lg:max-w-2xl max-h-[90vh] sm:max-h-[85vh] flex flex-col rounded-2xl shadow-2xl border overflow-hidden transition-all ${
           isLight
             ? 'bg-white border-slate-200 text-slate-900 shadow-slate-400/50'
             : 'bg-[#0f1117] border-slate-800 text-slate-100 shadow-black/80'
@@ -250,6 +252,6 @@ export const ShortcutsHelpModal: React.FC<ShortcutsHelpModalProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </ModalPortal>
   );
 };

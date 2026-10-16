@@ -38,6 +38,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { ModalPortal } from './ModalPortal';
 
 export type UploadWorkloadMode = 'new_cycle' | 'add_teacher' | 'reset_initial';
 
@@ -299,13 +300,18 @@ export const UploadWorkloadModal: React.FC<UploadWorkloadModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-3 sm:p-4 md:p-6 animate-in fade-in">
+    <ModalPortal
+      isOpen={isOpen}
+      onClose={onClose}
+      ariaLabel="Cargar Carga Horaria y Asignaciones"
+    >
       <div
-        className={`rounded-2xl w-full max-w-sm sm:max-w-xl md:max-w-3xl lg:max-w-4xl shadow-2xl border overflow-hidden flex flex-col max-h-[85vh] sm:max-h-[80dvh] transition-all ${
+        className={`relative z-[10000] rounded-2xl w-full max-w-sm sm:max-w-xl md:max-w-3xl lg:max-w-4xl shadow-2xl border overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh] transition-all ${
           isLight
             ? 'bg-white border-slate-200 text-slate-900 shadow-slate-300/80'
             : 'bg-[#111318] border-slate-800 text-slate-100 shadow-black/90'
         }`}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div
@@ -846,6 +852,6 @@ export const UploadWorkloadModal: React.FC<UploadWorkloadModalProps> = ({
           </div>
         </div>
       </div>
-    </div>
+    </ModalPortal>
   );
 };

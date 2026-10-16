@@ -54,6 +54,7 @@ import {
   FileText,
   Users,
 } from 'lucide-react';
+import { ModalPortal } from './ModalPortal';
 
 interface ExportImportModalProps {
   isOpen: boolean;
@@ -292,8 +293,15 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-3 sm:p-4 md:p-6 animate-in fade-in">
-      <div className="bg-[#111318] rounded-2xl w-full max-w-sm sm:max-w-md md:max-w-xl lg:max-w-2xl max-h-[85vh] sm:max-h-[80dvh] shadow-2xl border border-slate-800/90 overflow-hidden flex flex-col">
+    <ModalPortal
+      isOpen={isOpen}
+      onClose={onClose}
+      ariaLabel="Exportación, Importación y Respaldos"
+    >
+      <div
+        className="relative z-[10000] bg-[#111318] rounded-2xl w-full max-w-sm sm:max-w-md md:max-w-xl lg:max-w-2xl max-h-[90vh] sm:max-h-[85vh] shadow-2xl border border-slate-800/90 overflow-hidden flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="p-4 bg-[#0a0c10] border-b border-slate-800 text-white flex items-center justify-between shrink-0">
           <div className="flex items-center space-x-2">
@@ -709,7 +717,7 @@ export const ExportImportModal: React.FC<ExportImportModalProps> = ({
           )}
         </div>
       </div>
-    </div>
+    </ModalPortal>
   );
 };
 

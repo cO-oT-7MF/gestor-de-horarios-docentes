@@ -18,6 +18,7 @@ import {
   ScheduleEntry,
 } from '../types';
 import { SUBSTITUTION_REASONS } from '../utils/dutyManager';
+import { ModalPortal } from './ModalPortal';
 
 interface AssignSubstituteModalProps {
   isOpen: boolean;
@@ -99,13 +100,18 @@ export const AssignSubstituteModal: React.FC<AssignSubstituteModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-black/70 backdrop-blur-xs animate-in fade-in duration-150">
+    <ModalPortal
+      isOpen={isOpen}
+      onClose={onClose}
+      ariaLabel="Asignar Suplencia Docente"
+    >
       <div
-        className={`relative w-full max-w-sm sm:max-w-md md:max-w-lg lg:w-[460px] max-h-[85vh] sm:max-h-[80dvh] flex flex-col rounded-2xl border shadow-2xl overflow-hidden ${
+        className={`relative z-[10000] w-full max-w-sm sm:max-w-md md:max-w-lg lg:w-[460px] max-h-[90vh] sm:max-h-[85vh] flex flex-col rounded-2xl border shadow-2xl overflow-hidden ${
           isLight
             ? 'bg-white border-slate-200 text-slate-900 shadow-slate-400/40'
             : 'bg-[#12151e] border-slate-800 text-slate-100 shadow-black/80'
         }`}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div
@@ -334,6 +340,6 @@ export const AssignSubstituteModal: React.FC<AssignSubstituteModalProps> = ({
           </div>
         </form>
       </div>
-    </div>
+    </ModalPortal>
   );
 };

@@ -15,6 +15,7 @@ import {
 import { getAllTeacherEmails, getTeacherContactInfo } from '../data/teacherCatalog';
 import { useTheme } from '../context/ThemeContext';
 import { WhatsAppIcon } from './TeacherContactBadge';
+import { ModalPortal } from './ModalPortal';
 
 interface MassNotificationModalProps {
   isOpen: boolean;
@@ -113,16 +114,14 @@ export const MassNotificationModal: React.FC<MassNotificationModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="mass-notification-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-black/75 backdrop-blur-xs animate-in fade-in"
-      onClick={onClose}
+    <ModalPortal
+      isOpen={isOpen}
+      onClose={onClose}
+      ariaLabelledBy="mass-notification-title"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`w-full max-w-sm sm:max-w-xl md:max-w-2xl lg:max-w-3xl rounded-2xl border shadow-2xl overflow-hidden flex flex-col max-h-[85vh] sm:max-h-[80dvh] ${
+        className={`relative z-[10000] w-full max-w-sm sm:max-w-xl md:max-w-2xl lg:max-w-3xl rounded-2xl border shadow-2xl overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh] ${
           isLight
             ? 'bg-white border-slate-200 text-slate-900 shadow-slate-400/40'
             : 'bg-[#10131a] border-slate-800 text-slate-100 shadow-black/80'
@@ -348,6 +347,6 @@ export const MassNotificationModal: React.FC<MassNotificationModalProps> = ({
           </div>
         </div>
       </div>
-    </div>
+    </ModalPortal>
   );
 };
