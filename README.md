@@ -1,56 +1,47 @@
-# 🏫 Gestor de Horarios y Carga Académica - Secundaria Nº 129
-### Ciclo Escolar 2026-2027 | CT 19EES0129S
+# Gestor de Horarios y Carga Académica (Multi-Plantel y Multi-Plataforma)
 
-Sistema web progresivo y de alto rendimiento diseñado para la administración integral de plantillas docentes, planeación de horarios escolares, control de cargas horarias por contrato, gestión de guardias/suplencias y comunicación institucional directa.
+Sistema integral para la gestión, generación heurística y consulta de horarios escolares (PWA + Tauri v2 / Capacitor Mobile + API Express).
 
----
-
-## 🚀 Características Principales
-
-### 1. 📊 Control y Carga Académica Inteligente
-- **Matriz Interactiva de Horarios:** Visualización por docente, por grupo y en formato de sábana general completa.
-- **Verificación Automática:** Detección en tiempo real de empalmes de horas y solapamientos de aulas.
-- **Dashboard de Cumplimiento:** Monitoreo dinámico del avance de horas asignadas frente al contrato oficial de cada docente.
-
-### 2. 📱 Comunicación Institucional Directa (Nuevo)
-- **Información de Contacto Integrada:** Cada profesor cuenta con campos dedicados para Correo Electrónico Institucional y número de WhatsApp con formato internacional.
-- **Acciones Rápidas por Docente:**
-  - ✉️ **Enlace Mailto Directo:** Abre el cliente de correo preconfigurado con asunto escolar y saludo formal.
-  - 💬 **Enlace WhatsApp Directo:** Abre chats inmediatos vía `wa.me` con mensajes institucionales predefinidos.
-- **Notificaciones Masivas (BCC):** Módulo centralizado para generar correos masivos a los 40 docentes resguardando su privacidad mediante Copia Oculta (BCC).
-
-### 3. ⚙️ Edición Rápida e Importación Masiva
-- **Edición en Pantalla:** Modales flotantes para actualizar datos de contacto de manera instantánea sin perder el contexto de trabajo.
-- **Sincronización con Sábanas Académicas:** Importación y exportación de plantillas (CSV / Excel) que reconocen automáticamente las columnas de correo y teléfono para actualizar a toda la plantilla en un solo paso.
-
-### 4. 🛡️ Módulo de Guardias y Suplencias
-- **Listas de Disponibilidad Optimizadas:** Virtualización de alto rendimiento (60 FPS) para consultar docentes libres y en aula de forma simultánea.
-- **Asignación en 1 Clic:** Modales rápidos para cubrir recesos, zonas del plantel (patio, canchas, portón) y coberturas por ausencia.
-
----
-
-## 🛠️ Tecnologías y Arquitectura
-
-Este proyecto está construido con un stack web moderno y enfocado en el rendimiento offline-first:
-
-- **Frontend:** React, TypeScript, Vite.
-- **Estilos:** Tailwind CSS / Componentes nativos optimizados.
-- **Rendimiento:** Listas virtualizadas (@tanstack/react-virtual) para soporte fluido de plantillas extensas.
-- **Persistencia de Datos:** Almacenamiento local optimizado e IndexedDB para mantener el estado completo del ciclo escolar sin pérdida de información.
-
----
-
-## 📋 Estructura del Proyecto
+## Arquitectura del Sistema
 
 ```text
-gestor-de-horarios-docentes-academicos/
+gestor-horarios-academicos/
+├── mobile/                              # Configuración nativa Android / iOS (Capacitor / Tauri)
+├── server/                              # API Express y capa de autorización
+│   ├── middleware/
+│   │   └── authGuard.ts                 # Validación de tokens firmados HMAC-SHA256 (TTL 8h)
+│   ├── routes/
+│   │   ├── auth.routes.ts               # Login Admin (ADMIN_PASSWORD) y acceso Docente (RFC)
+│   │   └── schedule.routes.ts           # Sincronización de plantillas, horarios y mutaciones protegidas
+│   └── index.ts                         # Servidor Express con variables de entorno seguras
 ├── src/
-│   ├── components/         # Módulos de interfaz (Horarios, Sábana, Contactos, Guardias)
-│   ├── data/              # Catálogo oficial de docentes y materias (19EES0129S)
-│   ├── hooks/             # Lucha de estados y persistencia local/IndexedDB
-│   ├── utils/             # Utilidades de programación, scheduler y parseo CSV
-│   ├── App.tsx            # Componente raíz y enrutador de vistas
-│   └── main.tsx           # Punto de montaje de la aplicación
-├── public/                # Recursos estáticos e imágenes institucionales
-├── package.json           # Dependencias y scripts de compilación
-└── README.md              # Documentación oficial del repositorio
+│   ├── core/
+│   │   ├── models/                      # Modelos estrictos (Institución, Docente, Horario)
+│   │   ├── scheduler/                   # Web Worker heurístico, detector de empalmes y guardias
+│   │   └── parsers/                     # Parseador unificado CSV / XLSX con autodetección
+│   ├── data/presets/                    # Mapa curricular SEP 2027 (35 hrs) y presets por CCT
+│   ├── features/                        # Auth dual, KPIs, Sábana 60 FPS, Directorio y Guardias 1-Clic
+│   ├── storage/                         # Cliente IndexedDB offline-first y cola de sincronización
+│   ├── App.tsx                          # Enrutador protegido por rol, Bottom Tab Bar y White-Label CSS
+│   └── main.tsx                         # Punto de montaje PWA y registro de Service Worker
+├── .env.example                         # ADMIN_PASSWORD, ADMIN_SESSION_SECRET, PORT (sin prefijos VITE_)
+└── package.json
+```
+
+## Variables de Entorno
+
+Copia `.env.example` a `.env` y define las credenciales de servidor (nunca expuestas con prefijo `VITE_`):
+
+- `PORT`: Puerto del servidor Express (por defecto `3000`).
+- `ADMIN_PASSWORD`: Contraseña del Portal Administrativo.
+- `ADMIN_SESSION_SECRET`: Secreto HMAC para tokens con expiración estricta de 8 horas.
+- `GEMINI_API_KEY`: Opcional para el Copiloto Escolar IA.
+
+## Comandos
+
+```bash
+npm install
+npm run lint     # Verificación estricta de TypeScript (tsc --noEmit)
+npm run build    # Compilación de producción en dist/ (base: './')
+npm run dev      # Servidor Express + Vite en desarrollo
+```

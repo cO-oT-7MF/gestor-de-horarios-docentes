@@ -1,0 +1,22 @@
+{
+  "name": "Gestor de Horarios y Carga Académica",
+  "short_name": "Horarios Escolares",
+  "description": "Sistema multi-plantel y offline-first para gestión de horarios escolares, guardias y carga académica.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0f766e",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "./favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

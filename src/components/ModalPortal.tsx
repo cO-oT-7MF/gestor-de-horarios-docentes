@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 export interface ModalPortalProps {
@@ -26,91 +26,71 @@ export interface ModalPortalProps {
   ariaLabelledBy?: string;
 }
 
-// Global modal counter to handle nested or consecutive modals without breaking body scroll
-let activeModalCount = 0;
-let originalBodyOverflow = '';
-
+/**
+ * Modern ModalPortal backed by native HTML <dialog> (.showModal() / .close())
+ * with @starting-style & allow-discrete CSS transitions in Top Layer.
+ */
 export const ModalPortal: React.FC<ModalPortalProps> = ({
   isOpen,
   onClose,
   children,
-  maxWidth,
+  maxWidth = 'max-w-2xl',
   className = '',
   backdropClassName = '',
   closeOnBackdrop = true,
   closeOnEscape = true,
-  role = 'dialog',
   ariaLabel,
   ariaLabelledBy,
 }) => {
-  const [mounted, setMounted] = useState(false);
-  const contentRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
-  // Ensure mounting only on client (safe SSR/hydration)
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    const dialog = dialogRef.current;
+    if (!dialog) return;
 
-  // Manage body scroll locking and Escape key dismiss
-  useEffect(() => {
-    if (!isOpen) return;
-
-    if (activeModalCount === 0) {
-      originalBodyOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
+    if (isOpen) {
+      if (!dialog.open) {
+        dialog.showModal();
+      }
+    } else if (dialog.open) {
+      dialog.close();
     }
-    activeModalCount++;
+  }, [isOpen]);
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (closeOnEscape && event.key === 'Escape') {
-        event.stopPropagation();
-        onClose();
-      }
-    };
+  const handleCancel = (e: React.SyntheticEvent<HTMLDialogElement>) => {
+    if (!closeOnEscape) {
+      e.preventDefault();
+      return;
+    }
+    e.preventDefault();
+    onClose();
+  };
 
-    window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      activeModalCount = Math.max(0, activeModalCount - 1);
-      if (activeModalCount === 0) {
-        document.body.style.overflow = originalBodyOverflow;
-      }
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isOpen, closeOnEscape, onClose]);
-
-  if (!isOpen || !mounted || typeof document === 'undefined') {
-    return null;
-  }
-
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleClick = (e: React.MouseEvent<HTMLDialogElement>) => {
     if (!closeOnBackdrop) return;
-    // Dismiss if click is directly on the backdrop or outside the content dialog
-    if (
-      e.target === e.currentTarget ||
-      (contentRef.current && !contentRef.current.contains(e.target as Node))
-    ) {
+    if (e.target === dialogRef.current) {
       onClose();
     }
   };
 
+  if (typeof document === 'undefined') return null;
+
   return createPortal(
-    <div
-      className={`fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 md:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto ${backdropClassName}`}
-      onClick={handleBackdropClick}
-      role={role}
-      aria-modal="true"
+    <dialog
+      ref={dialogRef}
+      onCancel={handleCancel}
+      onClick={handleClick}
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy}
+      className={`modern-dialog w-full ${maxWidth} ${backdropClassName}`}
     >
       <div
-        ref={contentRef}
-        className={`relative z-[10000] ${maxWidth ? `w-full ${maxWidth}` : ''} ${className}`}
+        className={`relative w-full ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
-        {children}
+        {isOpen ? children : null}
       </div>
-    </div>,
+    </dialog>,
     document.body
   );
 };

@@ -274,7 +274,7 @@ html.theme-light,
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
     }
-    header, nav, button, .print\\:hidden, #app-navbar {
+    header, nav, button, .print\:hidden, #app-navbar {
       display: none !important;
     }
     .print-modal-overlay {
@@ -313,3 +313,96 @@ html.theme-light,
   }
 }
 
+
+/* =========================================================
+   Modern Native <dialog> Animations (@starting-style + allow-discrete)
+   ========================================================= */
+dialog.modern-dialog {
+  margin: auto;
+  padding: 0;
+  border: none;
+  background: transparent;
+  max-width: min(96vw, 72rem);
+  max-height: 92dvh;
+  overflow: visible;
+  opacity: 0;
+  transform: scale(0.96) translateY(10px);
+  transition:
+    opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    display 0.22s allow-discrete,
+    overlay 0.22s allow-discrete;
+}
+
+dialog.modern-dialog[open] {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+@starting-style {
+  dialog.modern-dialog[open] {
+    opacity: 0;
+    transform: scale(0.96) translateY(10px);
+  }
+}
+
+dialog.modern-dialog::backdrop {
+  background-color: rgba(2, 6, 23, 0);
+  backdrop-filter: blur(0px);
+  transition:
+    background-color 0.22s ease-out,
+    backdrop-filter 0.22s ease-out,
+    display 0.22s allow-discrete,
+    overlay 0.22s allow-discrete;
+}
+
+dialog.modern-dialog[open]::backdrop {
+  background-color: rgba(2, 6, 23, 0.65);
+  backdrop-filter: blur(5px);
+}
+
+@starting-style {
+  dialog.modern-dialog[open]::backdrop {
+    background-color: rgba(2, 6, 23, 0);
+    backdrop-filter: blur(0px);
+  }
+}
+
+/* =========================================================
+   Popover API + CSS Anchor Positioning Tooltips
+   ========================================================= */
+[popover].anchor-tooltip {
+  inset: auto;
+  margin: 0;
+  padding: 0.375rem 0.625rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: #0f172a;
+  color: #f8fafc;
+  font-size: 0.72rem;
+  line-height: 1.25;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+  position-area: top;
+  position-try-fallbacks: flip-block, flip-inline, bottom, right, left;
+  margin-bottom: 6px;
+  opacity: 0;
+  transform: translateY(4px) scale(0.97);
+  transition:
+    opacity 0.15s ease-out,
+    transform 0.15s ease-out,
+    display 0.15s allow-discrete,
+    overlay 0.15s allow-discrete;
+}
+
+[popover].anchor-tooltip:popover-open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+@starting-style {
+  [popover].anchor-tooltip:popover-open {
+    opacity: 0;
+    transform: translateY(4px) scale(0.97);
+  }
+}

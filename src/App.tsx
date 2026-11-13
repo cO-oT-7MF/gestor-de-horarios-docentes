@@ -50,7 +50,7 @@ import { ShortcutsHelpModal } from './components/ShortcutsHelpModal';
 import { ToastNotification, ToastData } from './components/ToastNotification';
 import { CopilotoEscolarChat } from './components/CopilotoEscolarChat';
 import { MassNotificationModal } from './components/MassNotificationModal';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, ShieldCheck, LogOut, LayoutDashboard, ShieldAlert, Phone, Grid3X3, Calendar } from 'lucide-react';
 import { generateFullScheduleFromWorkload } from './utils/scheduler';
 import { getInitialFactoryData, integrateNewTeacherWorkload } from './utils/googleDocParser';
 import { getLastKnownGoodSnapshot } from './utils/autoSave';
@@ -59,17 +59,53 @@ import {
   loadCycleFromIndexedDB,
   clearCycleFromIndexedDB,
   migrateLegacyLocalStorageToIndexedDB,
+  loadDutiesFromIndexedDB,
+  saveDutiesToIndexedDB,
 } from './utils/indexedDB';
-import { standardizeTeacherName, getCanonicalTeacherId } from './data/teacherCatalog';
+import { standardizeTeacherName, getCanonicalTeacherId, TEACHER_CATALOG } from './data/teacherCatalog';
 import { cleanseAndStandardizeScheduleData } from './utils/dataCleansing';
 import { useOneClickSave } from './hooks/useAutoSave';
 import { useScheduleHistory } from './hooks/useScheduleHistory';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import confetti from 'canvas-confetti';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
+import { useAuth } from './features/auth/useAuth';
+import { AuthPortal } from './features/auth/AuthPortal';
+import { DashboardKPIs } from './features/dashboard/DashboardKPIs';
+import { GuardsSubstitutionsPanel } from './features/guards-substitutions/GuardsSubstitutionsPanel';
+import { CommunicationsPanel } from './features/communications/CommunicationsPanel';
+import { VirtualizedTeacherMatrix } from './features/schedule-matrix/ScheduleMatrixFeature';
+import { INSTITUTION_PRESETS, getInstitutionPresetByCct } from './data/presets/11EES0119S.seed';
+import { indexedDbClient } from './storage/indexedDbClient';
+import type { DutyAssignment } from './types';
 
 function ScheduleApp() {
   const { isLight } = useTheme();
+  const auth = useAuth();
+  const [showAuthPortal, setShowAuthPortal] = useState(false);
+  const [activeCct, setActiveCct] = useState<string>(() => localStorage.getItem('gestor_active_cct') || '11EES0119S');
+  const institutionConfig = useMemo(() => getInstitutionPresetByCct(String(activeCct)), [activeCct]);
+  const [featureView, setFeatureView] = useState<'standard' | 'kpis' | 'guards' | 'comms' | 'virtual'>('standard');
+  const [duties, setDuties] = useState<DutyAssignment[]>([]);
+  const [isGeneratingWorker, setIsGeneratingWorker] = useState(false);
+  const [workerProgress, setWorkerProgress] = useState(0);
+
+  // Inyección dinámica de tokens CSS White-Label (--brand-primary, --brand-surface, etc.)
+  useEffect(() => {
+    const root = document.documentElement;
+    Object.entries(institutionConfig.brandTokens).forEach(([token, value]) => {
+      root.style.setProperty(token, String(value));
+    });
+    localStorage.setItem('gestor_active_cct', institutionConfig.cct);
+  }, [institutionConfig]);
+
+  // Cargar guardias desde IndexedDB al iniciar
+  useEffect(() => {
+    loadDutiesFromIndexedDB().then((loaded) => {
+      if (loaded && loaded.length > 0) setDuties(loaded);
+    });
+  }, []);
+
   // Application Data States (persisted in localStorage for convenience)
   const [entries, setEntries] = useState<ScheduleEntry[]>(() => {
     const saved = localStorage.getItem('sec129_schedule_entries');
@@ -771,6 +807,163 @@ function ScheduleApp() {
     enabled: true,
   });
 
+  const isAdminRole = !auth.session || auth.session.role === 'admin';
+  const scopedEntries = useMemo(() => {
+    if (auth.session?.role === 'teacher' && auth.session.teacherName) {
+      const target = normalizeName(auth.session.teacherName);
+      return entries.filter((e) => normalizeName(e.teacherName) === target);
+    }
+    return entries;
+  }, [entries, auth.session]);
+
+  const handleSwitchInstitution = useCallback(
+    (cct: string) => {
+      const preset = getInstitutionPresetByCct(cct);
+      setActiveCct(preset.cct);
+      setSchoolInfo({
+        name: preset.name,
+        workCenterKey: preset.workCenterKey,
+        shift: preset.shiftLabel,
+        schoolYear: preset.schoolYear,
+        zone: preset.zone,
+        regionalUnit: preset.regionalUnit,
+      });
+      showToast(`Plantel activo cambiado a ${preset.name} (${preset.cct})`, 'info');
+    },
+    [setSchoolInfo, showToast]
+  );
+
+  const handleAssignDuty = useCallback(
+    (duty: DutyAssignment) => {
+      setDuties((prev) => {
+        const next = [duty, ...prev];
+        saveDutiesToIndexedDB(next);
+        indexedDbClient.enqueueMutation('ASSIGN_DUTY', duty);
+        return next;
+      });
+      showToast(`Guardia asignada en 1 clic: ${duty.teacherName} (${duty.zone})`, 'success');
+    },
+    [showToast]
+  );
+
+  const handleRemoveDuty = useCallback(
+    (id: string) => {
+      setDuties((prev) => {
+        const next = prev.filter((d) => d.id !== id);
+        saveDutiesToIndexedDB(next);
+        return next;
+      });
+      showToast('Guardia eliminada.', 'info');
+    },
+    [showToast]
+  );
+
+  const handleRunWorkerGenerator = useCallback(() => {
+    if (isGeneratingWorker) return;
+    setIsGeneratingWorker(true);
+    setWorkerProgress(5);
+
+    const teacherProfiles = TEACHER_CATALOG.filter((t) => t.status !== 'inactive').map((t) => ({
+      teacherId: t.id,
+      teacherName: t.name,
+      rfc: t.payrollId,
+      regimenLaboral: (t.contractHours && t.contractHours < 20 ? 'CONTRATO' : 'BASE') as 'BASE' | 'CONTRATO',
+      horasBase: t.contractHours || 20,
+      horasContrato: 0,
+      diaLibreSugerido: 'NINGUNO' as const,
+      momentoHorario: 'COMPLETO' as const,
+      preferredSlots: t.preferredSlots,
+    }));
+
+    const worker = new Worker(
+      new URL('./core/scheduler/autoGenerator.worker.ts', import.meta.url),
+      { type: 'module' }
+    );
+
+    worker.onmessage = (ev) => {
+      const msg = ev.data;
+      if (msg.type === 'PROGRESS') {
+        setWorkerProgress(msg.progress);
+      } else if (msg.type === 'DONE') {
+        setEntries(msg.result.entries);
+        indexedDbClient.saveCycleState({
+          key: `${institutionConfig.cct}__${institutionConfig.schoolYear}`,
+          cct: institutionConfig.cct,
+          cycle: institutionConfig.schoolYear,
+          entries: msg.result.entries,
+          academicLoads,
+          schoolInfo,
+          dutyAssignments: duties,
+          substitutionAssignments: [],
+          contacts: TEACHER_CATALOG,
+          updatedAt: new Date().toISOString(),
+        });
+        setIsGeneratingWorker(false);
+        setWorkerProgress(100);
+        worker.terminate();
+        showToast(
+          `Web Worker completado: ${msg.result.stats.totalAssigned} bloques asignados en ${msg.result.stats.elapsedMs} ms (Horas puente: ${msg.result.stats.totalBridgeHours}).`,
+          'success'
+        );
+      } else if (msg.type === 'ERROR') {
+        setIsGeneratingWorker(false);
+        worker.terminate();
+        showToast(msg.error || 'Error en Web Worker', 'error');
+      }
+    };
+
+    worker.onerror = () => {
+      setIsGeneratingWorker(false);
+      worker.terminate();
+      showToast('No se pudo inicializar el Web Worker de generación.', 'error');
+    };
+
+    worker.postMessage({
+      cct: institutionConfig.cct,
+      cycle: institutionConfig.schoolYear,
+      groups: GROUPS,
+      academicLoads,
+      teacherProfiles,
+    });
+  }, [isGeneratingWorker, institutionConfig, academicLoads, schoolInfo, duties, setEntries, showToast]);
+
+  if (showAuthPortal) {
+    return (
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setShowAuthPortal(false)}
+          className="fixed top-4 right-4 z-50 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-300 hover:text-white"
+        >
+          Volver al Sistema
+        </button>
+        <AuthPortal
+          institution={institutionConfig}
+          onLoginAdmin={async (pwd) => {
+            const ok = await auth.loginAdmin(pwd);
+            if (ok) setShowAuthPortal(false);
+            return ok;
+          }}
+          onLoginTeacher={async (rfc) => {
+            const ok = await auth.loginTeacherByRfc(rfc);
+            if (ok) {
+              setShowAuthPortal(false);
+              setActiveTab('teacher');
+            }
+            return ok;
+          }}
+          onLoginPasskey={async () => {
+            const ok = await auth.loginPasskey();
+            if (ok) setShowAuthPortal(false);
+            return ok;
+          }}
+          error={auth.error}
+          isLoading={auth.isLoading}
+        />
+      </div>
+    );
+  }
+
   return (
     <div
       className={`min-h-screen ${
@@ -808,13 +1001,172 @@ function ScheduleApp() {
         onToggleCopilot={() => setIsCopilotOpen((prev) => !prev)}
       />
 
+      {/* Barra Multi-Plantel, Roles y Módulos */}
+      <div className="border-b border-slate-800/80 bg-[var(--brand-surface-elevated,#111318)]/90 px-3 sm:px-6 py-2 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => setFeatureView('standard')}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-medium transition-colors ${
+              featureView === 'standard'
+                ? 'bg-[var(--brand-primary,#d97706)] text-[var(--brand-primary-foreground,#fff)]'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+            }`}
+          >
+            <Calendar className="w-3.5 h-3.5" />
+            Horarios
+          </button>
+          <button
+            type="button"
+            onClick={() => setFeatureView('kpis')}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-medium transition-colors ${
+              featureView === 'kpis'
+                ? 'bg-[var(--brand-primary,#d97706)] text-[var(--brand-primary-foreground,#fff)]'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+            }`}
+          >
+            <LayoutDashboard className="w-3.5 h-3.5" />
+            KPIs & Plantel
+          </button>
+          <button
+            type="button"
+            onClick={() => setFeatureView('guards')}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-medium transition-colors ${
+              featureView === 'guards'
+                ? 'bg-[var(--brand-primary,#d97706)] text-[var(--brand-primary-foreground,#fff)]'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+            }`}
+          >
+            <ShieldAlert className="w-3.5 h-3.5" />
+            Guardias 1-Clic ({duties.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setFeatureView('comms')}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-medium transition-colors ${
+              featureView === 'comms'
+                ? 'bg-[var(--brand-primary,#d97706)] text-[var(--brand-primary-foreground,#fff)]'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+            }`}
+          >
+            <Phone className="w-3.5 h-3.5" />
+            Directorio
+          </button>
+          <button
+            type="button"
+            onClick={() => setFeatureView('virtual')}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-medium transition-colors ${
+              featureView === 'virtual'
+                ? 'bg-[var(--brand-primary,#d97706)] text-[var(--brand-primary-foreground,#fff)]'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+            }`}
+          >
+            <Grid3X3 className="w-3.5 h-3.5" />
+            Sábana 60 FPS
+          </button>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <span className="px-2 py-0.5 rounded-md bg-slate-900 border border-slate-700 text-[11px] text-slate-300">
+            {auth.session
+              ? auth.session.role === 'admin'
+                ? 'Rol: Administrativo (8h)'
+                : `Docente: ${auth.session.teacherName} (${auth.session.rfc})`
+              : `CCT ${institutionConfig.cct} • ${institutionConfig.schoolYear}`}
+          </span>
+          <button
+            type="button"
+            onClick={() => setShowAuthPortal(true)}
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-[11px] font-medium text-slate-200 hover:border-[var(--brand-primary,#d97706)]"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-[var(--brand-primary,#d97706)]" />
+            {auth.session ? 'Cambiar Rol' : 'Portal Acceso'}
+          </button>
+          {auth.session && (
+            <button
+              type="button"
+              onClick={auth.logout}
+              className="p-1 rounded-lg text-slate-400 hover:text-rose-400"
+              title="Cerrar sesión"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* Main View Content */}
-      <main className="flex-1 pb-16">
-        {activeTab === 'teacher' && (
+      <main className="flex-1 pb-24 md:pb-16">
+        {featureView === 'kpis' && (
+          <div className="max-w-7xl mx-auto p-3 sm:p-6">
+            <DashboardKPIs
+              institution={institutionConfig}
+              availableInstitutions={INSTITUTION_PRESETS}
+              onSwitchInstitution={handleSwitchInstitution}
+              entries={scopedEntries}
+              academicLoads={academicLoads}
+              groups={GROUPS}
+              isGenerating={isGeneratingWorker}
+              generationProgress={workerProgress}
+              onRunWorkerGenerator={handleRunWorkerGenerator}
+              isAdmin={isAdminRole}
+            />
+          </div>
+        )}
+
+        {featureView === 'guards' && (
+          <div className="max-w-6xl mx-auto p-3 sm:p-6">
+            <GuardsSubstitutionsPanel
+              entries={entries}
+              academicLoads={academicLoads}
+              duties={duties}
+              onAssignDuty={handleAssignDuty}
+              onRemoveDuty={handleRemoveDuty}
+              isAdmin={isAdminRole}
+            />
+          </div>
+        )}
+
+        {featureView === 'comms' && (
+          <div className="max-w-6xl mx-auto p-3 sm:p-6">
+            <CommunicationsPanel
+              onOpenMassNotification={() => setIsMassNotificationOpen(true)}
+              isAdmin={isAdminRole}
+            />
+          </div>
+        )}
+
+        {featureView === 'virtual' && (
+          <div className="max-w-7xl mx-auto p-3 sm:p-6">
+            <VirtualizedTeacherMatrix
+              entries={scopedEntries}
+              teachers={
+                auth.session?.role === 'teacher' && auth.session.teacherName
+                  ? [auth.session.teacherName]
+                  : allTeachers
+              }
+              onSelectTeacher={(teacher) => {
+                setSelectedTeacher(teacher);
+                setFeatureView('standard');
+                setActiveTab('teacher');
+              }}
+            />
+          </div>
+        )}
+
+        {featureView === 'standard' && activeTab === 'teacher' && (
           <TeacherScheduleView
-            entries={entries}
-            allTeachers={allTeachers}
-            selectedTeacher={selectedTeacher}
+            entries={scopedEntries}
+            allTeachers={
+              auth.session?.role === 'teacher' && auth.session.teacherName
+                ? [auth.session.teacherName]
+                : allTeachers
+            }
+            selectedTeacher={
+              auth.session?.role === 'teacher' && auth.session.teacherName
+                ? auth.session.teacherName
+                : selectedTeacher
+            }
             setSelectedTeacher={setSelectedTeacher}
             conflicts={conflicts}
             groups={GROUPS}
@@ -829,7 +1181,7 @@ function ScheduleApp() {
           />
         )}
 
-        {activeTab === 'group' && (
+        {featureView === 'standard' && activeTab === 'group' && (
           <GroupScheduleView
             entries={entries}
             groups={GROUPS}
@@ -845,7 +1197,7 @@ function ScheduleApp() {
           />
         )}
 
-        {activeTab === 'master' && (
+        {featureView === 'standard' && activeTab === 'master' && (
           <MasterScheduleMatrix
             entries={entries}
             allTeachers={allTeachers}
@@ -860,7 +1212,7 @@ function ScheduleApp() {
           />
         )}
 
-        {activeTab === 'workload' && (
+        {featureView === 'standard' && activeTab === 'workload' && (
           <AcademicLoadView
             academicLoads={academicLoads}
             setAcademicLoads={setAcademicLoads}
@@ -878,7 +1230,7 @@ function ScheduleApp() {
           />
         )}
 
-        {activeTab === 'conflicts' && (
+        {featureView === 'standard' && activeTab === 'conflicts' && (
           <ConflictDetectorView
             conflicts={conflicts}
             entries={entries}
@@ -891,7 +1243,7 @@ function ScheduleApp() {
           />
         )}
 
-        {activeTab === 'availability' && (
+        {featureView === 'standard' && activeTab === 'availability' && (
           <TeacherAvailabilityView
             entries={entries}
             allTeachers={allTeachers}
@@ -905,6 +1257,53 @@ function ScheduleApp() {
           />
         )}
       </main>
+
+      {/* Mobile-First Bottom Tab Bar (solo visible en móviles < md) */}
+      <nav
+        aria-label="Navegación rápida móvil"
+        className="md:hidden fixed bottom-0 inset-x-0 z-40 border-t border-slate-800 bg-[var(--brand-surface-elevated,#111318)]/95 backdrop-blur-md grid grid-cols-4 h-16 px-1"
+      >
+        <button
+          type="button"
+          onClick={() => setFeatureView('standard')}
+          className={`flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium ${
+            featureView === 'standard' ? 'text-[var(--brand-primary,#d97706)]' : 'text-slate-400'
+          }`}
+        >
+          <Calendar className="w-4 h-4" />
+          Horarios
+        </button>
+        <button
+          type="button"
+          onClick={() => setFeatureView('guards')}
+          className={`flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium ${
+            featureView === 'guards' ? 'text-[var(--brand-primary,#d97706)]' : 'text-slate-400'
+          }`}
+        >
+          <ShieldAlert className="w-4 h-4" />
+          Guardias
+        </button>
+        <button
+          type="button"
+          onClick={() => setFeatureView('comms')}
+          className={`flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium ${
+            featureView === 'comms' ? 'text-[var(--brand-primary,#d97706)]' : 'text-slate-400'
+          }`}
+        >
+          <Phone className="w-4 h-4" />
+          Contacto
+        </button>
+        <button
+          type="button"
+          onClick={() => setFeatureView('kpis')}
+          className={`flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium ${
+            featureView === 'kpis' ? 'text-[var(--brand-primary,#d97706)]' : 'text-slate-400'
+          }`}
+        >
+          <LayoutDashboard className="w-4 h-4" />
+          KPIs
+        </button>
+      </nav>
 
       {/* Modals */}
       <UploadWorkloadModal
