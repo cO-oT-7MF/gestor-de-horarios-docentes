@@ -684,14 +684,14 @@ function ScheduleApp() {
         updated = prev.map((e) =>
           e.id === data.id
             ? {
-                ...e,
-                day: data.day,
-                slot: data.slot,
-                groupId: data.groupId,
-                teacherName: canonicalTeacher,
-                teacherId: canonicalTeacherId,
-                subject: data.subject,
-              }
+              ...e,
+              day: data.day,
+              slot: data.slot,
+              groupId: data.groupId,
+              teacherName: canonicalTeacher,
+              teacherId: canonicalTeacherId,
+              subject: data.subject,
+            }
             : e
         );
       } else {
@@ -966,9 +966,8 @@ function ScheduleApp() {
 
   return (
     <div
-      className={`min-h-screen ${
-        isLight ? 'theme-light bg-slate-100 text-slate-900' : 'bg-[#0a0a0a] text-slate-200'
-      } flex flex-col font-sans transition-colors duration-200 selection:bg-amber-500/30 selection:text-amber-900`}
+      className={`min-h-screen ${isLight ? 'theme-light bg-slate-100 text-slate-900' : 'bg-[#0a0a0a] text-slate-200'
+        } flex flex-col font-sans transition-colors duration-200 selection:bg-amber-500/30 selection:text-amber-900`}
     >
       {/* Top Navbar */}
       <Navbar
@@ -1007,11 +1006,10 @@ function ScheduleApp() {
           <button
             type="button"
             onClick={() => setFeatureView('standard')}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-medium transition-colors ${
-              featureView === 'standard'
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-medium transition-colors ${featureView === 'standard'
                 ? 'bg-[var(--brand-primary,#d97706)] text-[var(--brand-primary-foreground,#fff)]'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-            }`}
+              }`}
           >
             <Calendar className="w-3.5 h-3.5" />
             Horarios
@@ -1019,11 +1017,10 @@ function ScheduleApp() {
           <button
             type="button"
             onClick={() => setFeatureView('kpis')}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-medium transition-colors ${
-              featureView === 'kpis'
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-medium transition-colors ${featureView === 'kpis'
                 ? 'bg-[var(--brand-primary,#d97706)] text-[var(--brand-primary-foreground,#fff)]'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-            }`}
+              }`}
           >
             <LayoutDashboard className="w-3.5 h-3.5" />
             KPIs & Plantel
@@ -1031,11 +1028,10 @@ function ScheduleApp() {
           <button
             type="button"
             onClick={() => setFeatureView('guards')}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-medium transition-colors ${
-              featureView === 'guards'
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-medium transition-colors ${featureView === 'guards'
                 ? 'bg-[var(--brand-primary,#d97706)] text-[var(--brand-primary-foreground,#fff)]'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-            }`}
+              }`}
           >
             <ShieldAlert className="w-3.5 h-3.5" />
             Guardias 1-Clic ({duties.length})
@@ -1043,11 +1039,10 @@ function ScheduleApp() {
           <button
             type="button"
             onClick={() => setFeatureView('comms')}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-medium transition-colors ${
-              featureView === 'comms'
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-medium transition-colors ${featureView === 'comms'
                 ? 'bg-[var(--brand-primary,#d97706)] text-[var(--brand-primary-foreground,#fff)]'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-            }`}
+              }`}
           >
             <Phone className="w-3.5 h-3.5" />
             Directorio
@@ -1055,11 +1050,10 @@ function ScheduleApp() {
           <button
             type="button"
             onClick={() => setFeatureView('virtual')}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-medium transition-colors ${
-              featureView === 'virtual'
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-medium transition-colors ${featureView === 'virtual'
                 ? 'bg-[var(--brand-primary,#d97706)] text-[var(--brand-primary-foreground,#fff)]'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-            }`}
+              }`}
           >
             <Grid3X3 className="w-3.5 h-3.5" />
             Sábana 60 FPS
@@ -1266,9 +1260,10 @@ function ScheduleApp() {
         <button
           type="button"
           onClick={() => setFeatureView('standard')}
-          className={`flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium ${
-            featureView === 'standard' ? 'text-[var(--brand-primary,#d97706)]' : 'text-slate-400'
-          }`}
+          className={`flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium ${featureView === 'standard'
+              ? 'bg-[var(--brand-primary,#d97706)] text-[var(--brand-primary-foreground,#fff)] rounded-xl my-1'
+              : 'text-slate-300'
+            }`}
         >
           <Calendar className="w-4 h-4" />
           Horarios
@@ -1276,9 +1271,8 @@ function ScheduleApp() {
         <button
           type="button"
           onClick={() => setFeatureView('guards')}
-          className={`flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium ${
-            featureView === 'guards' ? 'text-[var(--brand-primary,#d97706)]' : 'text-slate-400'
-          }`}
+          className={`flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium ${featureView === 'guards' ? 'text-[var(--brand-primary,#d97706)]' : 'text-slate-400'
+            }`}
         >
           <ShieldAlert className="w-4 h-4" />
           Guardias
@@ -1286,9 +1280,8 @@ function ScheduleApp() {
         <button
           type="button"
           onClick={() => setFeatureView('comms')}
-          className={`flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium ${
-            featureView === 'comms' ? 'text-[var(--brand-primary,#d97706)]' : 'text-slate-400'
-          }`}
+          className={`flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium ${featureView === 'comms' ? 'text-[var(--brand-primary,#d97706)]' : 'text-slate-400'
+            }`}
         >
           <Phone className="w-4 h-4" />
           Contacto
@@ -1296,9 +1289,8 @@ function ScheduleApp() {
         <button
           type="button"
           onClick={() => setFeatureView('kpis')}
-          className={`flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium ${
-            featureView === 'kpis' ? 'text-[var(--brand-primary,#d97706)]' : 'text-slate-400'
-          }`}
+          className={`flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium ${featureView === 'kpis' ? 'text-[var(--brand-primary,#d97706)]' : 'text-slate-400'
+            }`}
         >
           <LayoutDashboard className="w-4 h-4" />
           KPIs
@@ -1439,11 +1431,10 @@ function ScheduleApp() {
         <button
           id="copiloto-floating-trigger-btn"
           onClick={() => setIsCopilotOpen(true)}
-          className={`fixed bottom-5 right-5 z-40 flex items-center gap-2.5 px-4 py-3 rounded-full shadow-2xl transition-all duration-200 cursor-pointer active:scale-95 group hover:-translate-y-0.5 ${
-            isLight
+          className={`fixed bottom-5 right-5 z-40 flex items-center gap-2.5 px-4 py-3 rounded-full shadow-2xl transition-all duration-200 cursor-pointer active:scale-95 group hover:-translate-y-0.5 ${isLight
               ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-amber-500/30 hover:shadow-amber-500/50'
               : 'bg-gradient-to-r from-amber-600 to-amber-700 text-white border border-amber-400/30 shadow-amber-900/50 hover:shadow-amber-600/50'
-          }`}
+            }`}
           title="Abrir Copiloto Operativo Escolar IA (Ctrl+K)"
         >
           <div className="relative">
